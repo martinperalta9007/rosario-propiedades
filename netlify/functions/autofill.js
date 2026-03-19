@@ -24,7 +24,7 @@ exports.handler = async (event) => {
         system: `Extraés datos de ZonaProp Argentina. Respondé SOLO con el objeto JSON, sin texto antes ni después, sin markdown:
 {"dir":"calle número","dorm":0,"m2c":40,"m2t":45,"patio":"Sí","ubic":"Frente","valor":"55.000"}
 dorm: 0=mono,1-4=dorms,"Of."=oficina. patio: "Sí" si tiene patio/terraza/jardín, sino "No". ubic: Frente/Interno/Contrafrente/Dúplex/Casa/Reciclado. valor: número con punto como miles. Si no encontrás un dato ponés null. IMPORTANTE: respondé ÚNICAMENTE el JSON, nada más.`,
-        messages: [{ role: 'user', content: `Extraé los datos de esta propiedad: ${url}` }]
+        messages: [{ role: 'user', content: `Buscá en Google esta URL de ZonaProp y extraé los datos del inmueble: ${url} . Buscá el número de clasificado que aparece en la URL para encontrar la publicación exacta.` }]
       })
     });
 
