@@ -1,10 +1,15 @@
 exports.handler = async (event) => {
+  console.log('Function called, method:', event.httpMethod);
+
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
     const { url } = JSON.parse(event.body);
+    console.log('URL recibida:', url);
+    console.log('API Key presente:', !!process.env.ANTHROPIC_API_KEY);
+
     if (!url || !url.includes('zonaprop')) {
       return { statusCode: 400, body: JSON.stringify({ error: 'URL inválida' }) };
     }
@@ -28,11 +33,18 @@ dorm: 0=mono,1-4=dorms,"Of."=oficina. patio: "Sí" si tiene patio/terraza/jardí
       })
     });
 
+    console.log('Status de Anthropic:', response.status);
     const data = await response.json();
+    console.log('Respuesta:', JSON.stringify(data).slice(0, 300));
+
     const textBlock = data.content && data.content.find(b => b.type === 'text');
-    if (!textBlock) return { statusCode: 500, body: JSON.stringify({ error: 'Sin respuesta' }) };
+    if (!textBlock) {
+      console.log('Sin texto, content:', JSON.stringify(data.content));
+      return { statusCode: 500, body: JSON.stringify({ error: 'Sin respuesta de texto' }) };
+    }
 
     const clean = textBlock.text.trim().replace(/```json|```/g, '').trim();
+    console.log('JSON:', clean);
     const parsed = JSON.parse(clean);
 
     return {
@@ -41,6 +53,7 @@ dorm: 0=mono,1-4=dorms,"Of."=oficina. patio: "Sí" si tiene patio/terraza/jardí
       body: JSON.stringify(parsed)
     };
   } catch (e) {
+    console.log('ERROR:', e.message, e.stack);
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
