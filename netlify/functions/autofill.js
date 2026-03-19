@@ -1,15 +1,10 @@
 exports.handler = async (event) => {
-  console.log('Function called, method:', event.httpMethod);
-
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
     const { url } = JSON.parse(event.body);
-    console.log('URL recibida:', url);
-    console.log('API Key presente:', !!process.env.ANTHROPIC_API_KEY);
-
     if (!url || !url.includes('zonaprop')) {
       return { statusCode: 400, body: JSON.stringify({ error: 'URL inválida' }) };
     }
@@ -26,26 +21,26 @@ exports.handler = async (event) => {
         model: 'claude-sonnet-4-20250514',
         max_tokens: 800,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        system: `Extraés datos de ZonaProp Argentina. Respondé SOLO JSON sin markdown:
+        system: `Extraés datos de ZonaProp Argentina. Respondé SOLO con el objeto JSON, sin texto antes ni después, sin markdown:
 {"dir":"calle número","dorm":0,"m2c":40,"m2t":45,"patio":"Sí","ubic":"Frente","valor":"55.000"}
-dorm: 0=mono,1-4=dorms,"Of."=oficina. patio: "Sí" si tiene patio/terraza/jardín, sino "No". ubic: Frente/Interno/Contrafrente/Dúplex/Casa/Reciclado. valor: número con punto como miles. null si no encontrás.`,
-        messages: [{ role: 'user', content: `Datos de: ${url}` }]
+dorm: 0=mono,1-4=dorms,"Of."=oficina. patio: "Sí" si tiene patio/terraza/jardín, sino "No". ubic: Frente/Interno/Contrafrente/Dúplex/Casa/Reciclado. valor: número con punto como miles. Si no encontrás un dato ponés null. IMPORTANTE: respondé ÚNICAMENTE el JSON, nada más.`,
+        messages: [{ role: 'user', content: `Extraé los datos de esta propiedad: ${url}` }]
       })
     });
 
-    console.log('Status de Anthropic:', response.status);
     const data = await response.json();
-    console.log('Respuesta:', JSON.stringify(data).slice(0, 300));
-
     const textBlock = data.content && data.content.find(b => b.type === 'text');
     if (!textBlock) {
-      console.log('Sin texto, content:', JSON.stringify(data.content));
       return { statusCode: 500, body: JSON.stringify({ error: 'Sin respuesta de texto' }) };
     }
 
-    const clean = textBlock.text.trim().replace(/```json|```/g, '').trim();
-    console.log('JSON:', clean);
-    const parsed = JSON.parse(clean);
+    const text = textBlock.text.trim();
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      return { statusCode: 500, body: JSON.stringify({ error: 'No se encontró JSON' }) };
+    }
+
+    const parsed = JSON.parse(jsonMatch[0]);
 
     return {
       statusCode: 200,
@@ -53,7 +48,6 @@ dorm: 0=mono,1-4=dorms,"Of."=oficina. patio: "Sí" si tiene patio/terraza/jardí
       body: JSON.stringify(parsed)
     };
   } catch (e) {
-    console.log('ERROR:', e.message, e.stack);
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
