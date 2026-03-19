@@ -9,6 +9,23 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: 'URL inválida' }) };
     }
 
+    // Leer la página de ZonaProp directamente
+    const pageRes = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'es-AR,es;q=0.9',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+      }
+    });
+
+    const html = await pageRes.text();
+    // Extraer solo el texto relevante del HTML (primeros 8000 caracteres)
+    const clean = html.replace(/<script[\s\S]*?<\/script>/gi, '')
+                      .replace(/<style[\s\S]*?<\/style>/gi, '')
+                      .replace(/<[^>]+>/g, ' ')
+                      .replace(/\s+/g, ' ')
+                      .slice(0, 8000);
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -19,8 +36,8 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 800,
-        system: 'Extraés datos de propiedades de ZonaProp Argentina a partir de la URL. La URL contiene información en el slug. Por ejemplo: callao-al-1300 significa Callao 1300, monoambiente significa dorm 0, 1-dormitorio significa dorm 1. Respondé SOLO con JSON sin texto adicional: {"dir":"calle numero","dorm":0,"m2c":null,"m2t":null,"patio":"No","ubic":"Frente","valor":null}',
-        messages: [{ role: 'user', content: 'Extraé los datos de esta URL: ' + url }]
+        system: 'Extraés datos de propiedades inmobiliarias del texto de una página de ZonaProp Argentina. Respondé SOLO con JSON sin texto adicional: {"dir":"calle numero","dorm":0,"m2c":40,"m2t":45,"patio":"No","ubic":"Frente","valor":"55.000"}. dorm: 0=monoambiente,1-4=dormitorios,"Of."=oficina. patio: "Sí" si menciona patio/terraza/jardín, sino "No". ubic: Frente/Interno/Contrafrente/Dúplex/Casa/Reciclado. valor: solo número con punto como separador de miles. null si no encontrás el dato.',
+        messages: [{ role: 'user', content: 'Extraé los datos de esta propiedad:\n' + clean }]
       })
     });
 
@@ -37,7 +54,6 @@ exports.handler = async (event) => {
     }
 
     const parsed = JSON.parse(jsonMatch[0]);
-
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
