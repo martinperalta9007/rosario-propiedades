@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#8B1A1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Propiedades RI">
+<title>Evaluador — Rosario Inmobiliaria</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+:root{
+  --bordo:#8B1A1A;--bordo-d:#6B1212;
+  --beige:#EDE8D8;--beige-l:#F7F4EC;
+  --yellow:#F5C518;--yellow-l:#FFF8DC;
+  --green:#2D7A3A;--green-l:#EBF7ED;
+  --red:#C0392B;--red-l:#FDECEA;
+  --txt:#1A1A1A;--txt-m:#4A4040;--txt-l:#8A7A7A;
+  --bdr:#D5CDB8;--shd:0 2px 16px rgba(139,26,26,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--beige-l);color:var(--txt);min-height:100vh}
+
+/* HEADER */
+header{background:var(--bordo);position:sticky;top:0;z-index:100;box-shadow:0 4px 24px rgba(139,26,26,.25)}
+.h-in{max-width:1500px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;gap:10px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-ic{width:40px;height:40px;background:var(--yellow);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:var(--bordo);font-family:'Playfair Display',serif;flex-shrink:0}
+.logo h1{font-family:'Playfair Display',serif;font-size:16px;color:#fff;line-height:1.1}
+.logo p{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.06em;text-transform:uppercase}
+.h-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.stat-pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 10px;font-size:11px;color:#fff;display:flex;align-items:center;gap:4px;font-weight:500;white-space:nowrap}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-t{background:rgba(255,255,255,.5)}.dot-ok{background:#5ECC6A}.dot-no{background:#FF6B6B}.dot-p{background:var(--yellow)}
+.badge-admin{background:var(--yellow);color:var(--bordo-d);font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px}
+.badge-viewer{background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:600;padding:3px 8px;border-radius:10px}
+.rt-dot{width:7px;height:7px;border-radius:50%;background:#5ECC6A;display:inline-block;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* LOGIN */
+#sc-login{display:flex;align-items:center;justify-content:center;min-height:80vh;padding:20px}
+.login-card{background:#fff;border-radius:18px;padding:36px 38px;width:100%;max-width:380px;box-shadow:var(--shd);text-align:center}
+.login-logo{width:60px;height:60px;background:var(--bordo);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:var(--yellow);font-family:'Playfair Display',serif;margin:0 auto 16px}
+.login-card h2{font-family:'Playfair Display',serif;font-size:21px;color:var(--bordo);margin-bottom:5px}
+.login-card p{font-size:12px;color:var(--txt-l);margin-bottom:22px;line-height:1.5}
+.login-card input{width:100%;padding:10px 13px;border:1.5px solid var(--bdr);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .15s;margin-bottom:10px}
+.login-card input:focus{border-color:var(--bordo)}
+.btn-login{width:100%;padding:11px;border-radius:10px;border:none;background:var(--bordo);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s}
+.btn-login:hover{background:var(--bordo-d)}
+.login-err{font-size:12px;color:var(--red);margin-top:8px;min-height:16px}
+
+/* PROGRESS */
+.prog-w{max-width:1500px;margin:10px auto 0;padding:0 20px}
+.prog-bg{background:var(--bdr);border-radius:10px;height:5px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--bordo),var(--yellow));border-radius:10px;transition:width .4s;width:0}
+.prog-lbl{font-size:11px;color:var(--txt-l);margin-top:3px;text-align:right}
+
+/* PLANILLA BAR */
+.plan-bar{max-width:1500px;margin:10px auto 0;padding:0 20px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.pchip{padding:5px 12px;border-radius:20px;border:1.5px solid var(--bdr);background:#fff;font-size:12px;font-weight:500;color:var(--txt-m);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px}
+.pchip:hover{border-color:var(--bordo);color:var(--bordo)}
+.pchip.sel{background:var(--bordo);border-color:var(--bordo);color:#fff}
+.pchip .xb{opacity:.5;font-size:15px;line-height:1;margin-left:2px;cursor:pointer}
+.pchip .xb:hover{opacity:1}
+
+/* TOOLBAR */
+.toolbar{max-width:1500px;margin:11px auto 0;padding:0 20px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tbtn{padding:6px 13px;border-radius:20px;border:1.5px solid var(--bdr);background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--txt-m);cursor:pointer;transition:all .15s;white-space:nowrap}
+.tbtn:hover{border-color:var(--bordo);color:var(--bordo)}
+.tbtn.active{background:var(--bordo);border-color:var(--bordo);color:#fff}
+.tbtn.aok{background:var(--green);border-color:var(--green);color:#fff}
+.tbtn.ano{background:var(--red);border-color:var(--red);color:#fff}
+.tbtn.yellow{background:var(--yellow);border-color:var(--yellow);color:var(--bordo-d);font-weight:700}
+.tbtn.yellow:hover{background:#e0b200}
+.tbtn.outline{border-color:var(--bordo);color:var(--bordo)}.tbtn.outline:hover{background:var(--bordo);color:#fff}
+.ml{margin-left:auto}
+.sw{position:relative}.sw input{padding:6px 12px 6px 30px;border-radius:20px;border:1.5px solid var(--bdr);background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;width:185px;outline:none;transition:border-color .15s}
+.sw input:focus{border-color:var(--bordo)}
+.sico{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--txt-l);font-size:13px;pointer-events:none}
+
+/* TABLE */
+.tw{max-width:1500px;margin:13px auto 40px;padding:0 20px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shd);min-width:880px}
+thead tr{background:var(--bordo)}
+thead th{padding:11px 8px;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.92);text-transform:uppercase;letter-spacing:.07em;text-align:center;white-space:nowrap}
+thead th:nth-child(1){text-align:left;padding-left:15px}
+tbody tr{border-bottom:1px solid var(--beige);transition:background .1s}
+tbody tr:nth-child(even){background:var(--beige-l)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#EDE0D0!important}
+tbody tr.rok{background:var(--green-l)!important}
+tbody tr.rno{background:var(--red-l)!important}
+td{padding:8px 8px;font-size:12.5px;text-align:center;color:var(--txt);vertical-align:middle}
+td:first-child{text-align:left;padding-left:15px}
+.rn{display:inline-block;background:var(--bordo);color:#fff;font-size:9.5px;font-weight:700;border-radius:4px;padding:1px 4px;margin-right:4px;min-width:20px;text-align:center}
+.pdir{font-weight:600;font-size:12.5px;color:var(--bordo-d)}
+.bdg{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:600}
+.bf{background:#E8F5E9;color:#2D7A3A}.bi{background:#FFF3E0;color:#8B5800}.bc{background:#EDE7F6;color:#4527A0}.be{background:#FDE8E8;color:var(--bordo)}
+.precio{font-weight:700;color:var(--green);white-space:nowrap}
+.lbtn{display:inline-flex;align-items:center;gap:3px;background:var(--bordo);color:#fff;text-decoration:none;font-size:10.5px;font-weight:600;padding:4px 9px;border-radius:16px;transition:background .15s,transform .1s}
+.lbtn:hover{background:var(--bordo-d);transform:translateY(-1px)}
+.rc{display:flex;gap:4px;justify-content:center;align-items:center}
+.rb{width:32px;height:32px;border-radius:50%;border:2px solid #ddd;font-size:15px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;background:#f5f5f5}
+.rb:hover{transform:scale(1.18)}
+.rb.ok.sel{border-color:var(--green);background:var(--green-l);box-shadow:0 0 0 3px rgba(45,122,58,.18);transform:scale(1.1)}
+.rb.no.sel{border-color:var(--red);background:var(--red-l);box-shadow:0 0 0 3px rgba(192,57,43,.18);transform:scale(1.1)}
+.rb.ok:hover{border-color:var(--green);background:var(--green-l)}
+.rb.no:hover{border-color:var(--red);background:var(--red-l)}
+.ni{width:100%;min-width:95px;padding:4px 7px;border:1.5px solid var(--bdr);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:11.5px;color:var(--txt);background:transparent;outline:none;transition:border-color .15s;resize:none}
+.ni:focus{border-color:var(--bordo);background:#fff}
+.ni::placeholder{color:var(--txt-l);font-style:italic}
+.ab{display:flex;gap:4px;justify-content:center}
+.eb,.db{width:28px;height:28px;border-radius:7px;border:none;cursor:pointer;font-size:13px;transition:all .13s;display:flex;align-items:center;justify-content:center}
+.eb{background:var(--yellow-l);color:var(--bordo)}.eb:hover{background:var(--yellow);transform:scale(1.1)}
+.db{background:var(--red-l);color:var(--red)}.db:hover{background:#f5b8b4;transform:scale(1.1)}
+.erow td{text-align:center!important;padding:36px!important;color:var(--txt-l);font-size:13px}
+
+/* MODALS */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.ov.open{display:flex}
+.modal{background:#fff;border-radius:18px;padding:24px 28px;width:100%;max-width:530px;box-shadow:0 20px 60px rgba(0,0,0,.18);animation:up .22s ease;max-height:92vh;overflow-y:auto}
+.sm{max-width:360px;text-align:center}
+.pm{max-width:410px}
+@keyframes up{from{transform:translateY(26px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal h2{font-family:'Playfair Display',serif;font-size:18px;color:var(--bordo);margin-bottom:16px;display:flex;align-items:center;gap:6px}
+.ur{display:flex;gap:7px;align-items:flex-end;margin-bottom:12px}
+.ur .fg{flex:1;margin-bottom:0}
+.afbtn{padding:9px 11px;border-radius:9px;border:none;background:var(--bordo);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px;flex-shrink:0;white-space:nowrap}
+.afbtn:hover{background:var(--bordo-d)}.afbtn:disabled{background:#ccc;cursor:not-allowed}
+.afst{font-size:11px;margin-top:4px;min-height:15px}
+.afst.ld{color:var(--bordo)}.afst.ok{color:var(--green)}.afst.er{color:var(--red)}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:10px;font-weight:700;color:var(--txt-m);text-transform:uppercase;letter-spacing:.05em}
+.fg input,.fg select{padding:8px 10px;border:1.5px solid var(--bdr);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--txt);outline:none;transition:border-color .15s;background:#fafafa}
+.fg input:focus,.fg select:focus{border-color:var(--bordo);background:#fff}
+.fg input.filled{border-color:var(--green);background:#f0faf2}
+.ma{display:flex;gap:7px;margin-top:16px;justify-content:flex-end}
+.btnc{padding:8px 16px;border-radius:9px;border:1.5px solid var(--bdr);background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--txt-m);cursor:pointer;transition:all .13s}
+.btnc:hover{border-color:var(--bordo);color:var(--bordo)}
+.btns{padding:8px 20px;border-radius:9px;border:none;background:var(--bordo);color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .13s}
+.btns:hover{background:var(--bordo-d);transform:translateY(-1px)}
+.btnd{padding:8px 18px;border-radius:9px;border:none;background:var(--red);color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
+.btnd:hover{background:#a93226}
+.sm .ico{font-size:30px;margin-bottom:10px}
+.sm h3{font-family:'Playfair Display',serif;font-size:17px;margin-bottom:6px}
+.sm p{font-size:13px;color:var(--txt-l);margin-bottom:16px;line-height:1.5}
+.share-box{background:var(--beige);border-radius:10px;padding:11px 13px;margin-bottom:12px}
+.share-box p{font-size:11px;color:var(--txt-l);margin-bottom:5px}
+.share-url{font-size:12px;color:var(--bordo-d);font-weight:600;word-break:break-all}
+.cbtn{margin-top:7px;padding:5px 13px;border-radius:8px;border:none;background:var(--bordo);color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+.cbtn:hover{background:var(--bordo-d)}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;right:20px;background:var(--bordo);color:#fff;padding:10px 15px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(139,26,26,.3);transform:translateY(70px);opacity:0;transition:all .32s cubic-bezier(.34,1.56,.64,1);z-index:999;display:flex;align-items:center;gap:6px}
+#toast.show{transform:translateY(0);opacity:1}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+@media(max-width:640px){
+  .fg2{grid-template-columns:1fr}.modal{padding:18px 13px}
+  .ur{flex-direction:column}.afbtn{width:100%;justify-content:center}
+  .h-right .stat-pill{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-in">
+    <div class="logo">
+      <div class="logo-ic">R</div>
+      <div><h1>Rosario Inmobiliaria</h1><p id="h-sub">Evaluador de Propiedades</p></div>
+    </div>
+    <div class="h-right">
+      <span class="rt-dot" title="Tiempo real activo"></span>
+      <div class="stat-pill"><span class="dot dot-t"></span><span id="st-t">—</span></div>
+      <div class="stat-pill"><span class="dot dot-ok"></span><span id="st-ok">—</span></div>
+      <div class="stat-pill"><span class="dot dot-no"></span><span id="st-no">—</span></div>
+      <div class="stat-pill"><span class="dot dot-p"></span><span id="st-p">—</span></div>
+      <span id="role-badge"></span>
+    </div>
+  </div>
+</header>
+
+<!-- LOGIN -->
+<div id="sc-login" style="display:flex">
+  <div class="login-card">
+    <div class="login-logo">R</div>
+    <h2>Rosario Inmobiliaria</h2>
+    <p>Ingresá como administrador para editar,<br>o abrí el link que te compartieron.</p>
+    <input type="password" id="pw" placeholder="Contraseña admin" onkeydown="if(event.key==='Enter')tryLogin()">
+    <button class="btn-login" onclick="tryLogin()">Entrar como admin</button>
+    <div class="login-err" id="lerr"></div>
+  </div>
+</div>
+
+<!-- MAIN UI (hidden until login/viewer) -->
+<div id="main-ui" style="display:none">
+  <div class="prog-w"><div class="prog-bg"><div class="prog-fill" id="prog"></div></div><div class="prog-lbl" id="prog-lbl">0% evaluado</div></div>
+  <div class="plan-bar" id="plan-bar"></div>
+  <div class="toolbar" id="toolbar">
+    <button class="tbtn active" onclick="setF('all',this)">Todas</button>
+    <button class="tbtn" onclick="setF('ok',this)">👍 Positivas</button>
+    <button class="tbtn" onclick="setF('no',this)">👎 Negativas</button>
+    <button class="tbtn" onclick="setF('pend',this)">⏳ Pendientes</button>
+    <button class="tbtn yellow" id="btn-add" style="display:none" onclick="openAdd()">＋ Agregar</button>
+    <button class="tbtn outline" id="btn-np" style="display:none" onclick="openNewPlan()">＋ Nueva planilla</button>
+    <button class="tbtn outline" id="btn-sh" style="display:none" onclick="openShare()">🔗 Compartir</button>
+    <button class="tbtn outline" onclick="exportCSV()">⬇ CSV</button>
+    <div class="sw ml"><span class="sico">🔍</span><input type="text" placeholder="Buscar..." oninput="renderT()"></div>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>#&nbsp; Dirección</th><th>Dorm.</th><th>M² Cub.</th><th>M² Tot.</th>
+        <th>Patio</th><th>Ubicación</th><th>Valor USD</th><th>Link</th>
+        <th>Notas</th><th>Calificación</th><th id="th-ac" style="display:none">Acciones</th>
+      </tr></thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL: prop -->
+<div class="ov" id="ov-p">
+  <div class="modal">
+    <h2 id="m-ti">＋ Nueva propiedad</h2>
+    <div class="ur">
+      <div class="fg"><label>Link ZonaProp</label><input type="url" id="f-url" placeholder="https://www.zonaprop.com.ar/..."></div>
+      <button class="afbtn" id="afbtn" onclick="autofill()">✨ Completar</button>
+    </div>
+    <div class="afst" id="afst"></div>
+    <div class="fg2">
+      <div class="fg full"><label>Dirección *</label><input type="text" id="f-dir" placeholder="Ej: Corrientes 1400"></div>
+      <div class="fg"><label>Dormitorios</label>
+        <select id="f-dorm"><option value="0">Monoambiente</option><option value="1">1 dorm.</option><option value="2">2 dorm.</option><option value="3">3 dorm.</option><option value="4">4 dorm.</option><option value="Of.">Oficina</option></select></div>
+      <div class="fg"><label>Patio</label><select id="f-patio"><option value="No">No</option><option value="Sí">Sí</option></select></div>
+      <div class="fg"><label>M² Cubiertos</label><input type="number" id="f-m2c" placeholder="42"></div>
+      <div class="fg"><label>M² Totales</label><input type="number" id="f-m2t" placeholder="48"></div>
+      <div class="fg"><label>Ubicación</label>
+        <select id="f-ubic"><option>Frente</option><option>Interno</option><option>Contrafrente</option><option>Dúplex</option><option>Casa</option><option>Reciclado</option></select></div>
+      <div class="fg"><label>Valor USD</label><input type="text" id="f-valor" placeholder="55.000"></div>
+    </div>
+    <div class="ma"><button class="btnc" onclick="closeOv('ov-p')">Cancelar</button><button class="btns" onclick="saveProp()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- MODAL: confirm del -->
+<div class="ov" id="ov-d">
+  <div class="modal sm">
+    <div class="ico">🗑️</div><h3>¿Eliminar propiedad?</h3>
+    <p id="d-msg">Esta acción no se puede deshacer.</p>
+    <div class="ma" style="justify-content:center"><button class="btnc" onclick="closeOv('ov-d')">Cancelar</button><button class="btnd" onclick="confirmDel()">Eliminar</button></div>
+  </div>
+</div>
+
+<!-- MODAL: nueva planilla -->
+<div class="ov" id="ov-np">
+  <div class="modal pm">
+    <h2>＋ Nueva planilla</h2>
+    <div class="fg" style="margin-bottom:13px"><label>Nombre</label><input type="text" id="np-name" placeholder="Ej: Búsqueda Marzo 2026" onkeydown="if(event.key==='Enter')createPlan()"></div>
+    <div class="ma"><button class="btnc" onclick="closeOv('ov-np')">Cancelar</button><button class="btns" onclick="createPlan()">Crear</button></div>
+  </div>
+</div>
+
+<!-- MODAL: share -->
+<div class="ov" id="ov-sh">
+  <div class="modal pm">
+    <h2>🔗 Compartir planilla</h2>
+    <div class="share-box">
+      <p>Link para evaluadores (solo pueden calificar, no editar):</p>
+      <div class="share-url" id="sh-url">—</div>
+      <button class="cbtn" onclick="copyUrl()">📋 Copiar link</button>
+    </div>
+    <p style="font-size:12px;color:var(--txt-l);line-height:1.6">
+      Compartí este link por WhatsApp o email. El evaluador ve la planilla en tiempo real y puede calificar con 👍/👎 y agregar notas. Vos ves todo al instante desde tu panel.
+    </p>
+    <div class="ma"><button class="btns" onclick="closeOv('ov-sh')">Listo</button></div>
+  </div>
+</div>
+
+<div id="toast"><span id="tmsg"></span></div>
+
+<script>
+// ── SUPABASE ────────────────────────────────────────────────────
+const SUPA_URL = 'https://kzgbostzgfciosaydqpr.supabase.co';
+const SUPA_KEY = 'sb_publishable_pWFKYkogjA-3ZwlvyXV4RA_W3FkmvTO';
+const ADMIN_PW = 'rosario2026'; // ← podés cambiarlo
+
+const db = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// ── STATE ───────────────────────────────────────────────────────
+let isAdmin=false, planillas=[], curPlan=null;
+let props=[], evals={}, filter='all', editId=null, delId=null, rtCh=null;
+
+// ── BOOT ────────────────────────────────────────────────────────
+(async()=>{
+  const pid = new URLSearchParams(location.search).get('p');
+  if(pid){ await startViewer(pid); } else { showLogin(); }
+})();
+
+function showLogin(){ document.getElementById('sc-login').style.display='flex'; document.getElementById('main-ui').style.display='none'; }
+function showMain(){ document.getElementById('sc-login').style.display='none'; document.getElementById('main-ui').style.display='block'; }
+
+// ── LOGIN ───────────────────────────────────────────────────────
+async function tryLogin(){
+  if(document.getElementById('pw').value.trim()!==ADMIN_PW){ document.getElementById('lerr').textContent='Contraseña incorrecta.'; return; }
+  isAdmin=true;
+  document.getElementById('lerr').textContent='';
+  document.getElementById('role-badge').innerHTML='<span class="badge-admin">ADMIN</span>';
+  ['btn-add','btn-np','btn-sh','th-ac'].forEach(id=>document.getElementById(id).style.display='');
+  showMain();
+  await loadPlanillas();
+}
+
+// ── VIEWER ──────────────────────────────────────────────────────
+async function startViewer(pid){
+  const {data:pl}=await db.from('planillas').select('*').eq('id',pid).single();
+  if(!pl){ showMain(); document.getElementById('tb').innerHTML='<tr class="erow"><td colspan="11">Planilla no encontrada o link incorrecto.</td></tr>'; return; }
+  curPlan=pl;
+  document.getElementById('role-badge').innerHTML='<span class="badge-viewer">EVALUADOR</span>';
+  document.getElementById('h-sub').textContent=pl.nombre;
+  document.getElementById('plan-bar').style.display='none';
+  showMain();
+  await loadProps();
+  subRT();
+}
+
+// ── PLANILLAS ───────────────────────────────────────────────────
+async function loadPlanillas(){
+  const {data}=await db.from('planillas').select('*').order('created_at');
+  planillas=data||[];
+  renderBar();
+  if(planillas.length){ await selPlan(planillas[0]); }
+  else { document.getElementById('tb').innerHTML='<tr class="erow"><td colspan="11">No tenés planillas. Creá una con "+ Nueva planilla".</td></tr>'; }
+}
+function renderBar(){
+  document.getElementById('plan-bar').innerHTML=planillas.map(p=>`
+    <div class="pchip ${curPlan&&curPlan.id===p.id?'sel':''}" onclick='selPlan(${JSON.stringify(p)})'>
+      ${p.nombre}<span class="xb" onclick="event.stopPropagation();delPlan('${p.id}','${p.nombre.replace(/'/g,"\\'")}')">×</span>
+    </div>`).join('')||'<span style="font-size:12px;color:var(--txt-l)">Sin planillas</span>';
+}
+async function selPlan(p){
+  curPlan=p; document.getElementById('h-sub').textContent=p.nombre;
+  renderBar(); if(rtCh) db.removeChannel(rtCh);
+  await loadProps(); subRT();
+}
+async function openNewPlan(){ document.getElementById('np-name').value=''; openOv('ov-np'); setTimeout(()=>document.getElementById('np-name').focus(),80); }
+async function createPlan(){
+  const n=document.getElementById('np-name').value.trim(); if(!n) return;
+  const {data,error}=await db.from('planillas').insert({nombre:n}).select().single();
+  if(error){ toast('❌ Error al crear'); return; }
+  planillas.push(data); closeOv('ov-np'); await selPlan(data); toast('✅ Planilla creada');
+}
+async function delPlan(id,nombre){
+  if(!confirm(`¿Eliminar la planilla "${nombre}" y todo su contenido?`)) return;
+  await db.from('planillas').delete().eq('id',id);
+  planillas=planillas.filter(p=>p.id!==id);
+  if(curPlan&&curPlan.id===id){ curPlan=planillas[0]||null; if(curPlan) await selPlan(curPlan); else { props=[]; evals={}; renderT(); renderBar(); } }
+  else renderBar();
+  toast('🗑️ Planilla eliminada');
+}
+
+// ── SHARE ───────────────────────────────────────────────────────
+function openShare(){
+  if(!curPlan){ toast('Seleccioná una planilla'); return; }
+  document.getElementById('sh-url').textContent=`${location.origin}${location.pathname}?p=${curPlan.id}`;
+  openOv('ov-sh');
+}
+function copyUrl(){ navigator.clipboard.writeText(document.getElementById('sh-url').textContent).then(()=>toast('📋 Link copiado')); }
+
+// ── PROPS ───────────────────────────────────────────────────────
+async function loadProps(){
+  if(!curPlan){ props=[]; evals={}; renderT(); return; }
+  const [pr,er]=await Promise.all([
+    db.from('propiedades').select('*').eq('planilla_id',curPlan.id).order('posicion'),
+    db.from('evaluaciones').select('*').eq('planilla_id',curPlan.id)
+  ]);
+  props=pr.data||[]; evals={};
+  (er.data||[]).forEach(e=>{ evals[e.propiedad_id]={rating:e.rating,nota:e.nota||''}; });
+  renderT();
+}
+
+// ── REALTIME ────────────────────────────────────────────────────
+function subRT(){
+  if(!curPlan) return;
+  rtCh=db.channel('ev-'+curPlan.id)
+    .on('postgres_changes',{event:'*',schema:'public',table:'evaluaciones',filter:`planilla_id=eq.${curPlan.id}`},
+      p=>{ const e=p.new; if(e&&e.propiedad_id){ evals[e.propiedad_id]={rating:e.rating,nota:e.nota||''}; renderT(); } })
+    .subscribe();
+}
+
+// ── RENDER ──────────────────────────────────────────────────────
+function dLbl(d){ return d==='Of.'||d==='Oficina'?'Oficina':d==0?'Mono.':d+' dorm.'; }
+function uBdg(u){ const m={Frente:'bf',Interno:'bi',Contrafrente:'bc'}; return `<span class="bdg ${m[u]||'be'}">${u||'—'}</span>`; }
+
+function renderT(){
+  const q=(document.querySelector('.sw input')||{value:''}).value.toLowerCase();
+  const tb=document.getElementById('tb'); tb.innerHTML=''; let v=0;
+  props.forEach((p,i)=>{
+    const ev=evals[p.id]||{}, r=ev.rating||null;
+    if(filter==='ok'&&r!=='ok') return; if(filter==='no'&&r!=='no') return;
+    if(filter==='pend'&&r!==null) return;
+    if(q&&!(p.dir||'').toLowerCase().includes(q)) return;
+    v++;
+    const rc=r==='ok'?'rok':r==='no'?'rno':'';
+    const tr=document.createElement('tr'); tr.className=rc;
+    tr.innerHTML=`
+      <td><span class="rn">${i+1}</span><span class="pdir">${p.dir||'—'}</span></td>
+      <td>${dLbl(p.dorm)}</td><td>${p.m2c?p.m2c+' m²':'—'}</td><td>${p.m2t?p.m2t+' m²':'—'}</td>
+      <td>${p.patio||'—'}</td><td>${uBdg(p.ubic)}</td>
+      <td><span class="precio">${p.valor?'USD '+p.valor:'—'}</span></td>
+      <td>${p.url?`<a class="lbtn" href="${p.url}" target="_blank" rel="noopener">🔗 Ver</a>`:'<span style="color:var(--txt-l);font-size:11px">—</span>'}</td>
+      <td><textarea class="ni" rows="1" placeholder="Nota..." onchange="saveNote(${p.id},this.value)">${ev.nota||''}</textarea></td>
+      <td><div class="rc">
+        <button class="rb ok ${r==='ok'?'sel':''}" onclick="rate(${p.id},'ok')">👍</button>
+        <button class="rb no ${r==='no'?'sel':''}" onclick="rate(${p.id},'no')">👎</button>
+      </div></td>
+      ${isAdmin?`<td><div class="ab"><button class="eb" onclick="openEdit(${p.id})">✏️</button><button class="db" onclick="askDel(${p.id})">🗑️</button></div></td>`:''}
+    `;
+    tb.appendChild(tr);
+  });
+  if(!v) tb.innerHTML='<tr class="erow"><td colspan="11">Sin propiedades con ese filtro.</td></tr>';
+  updStats();
+}
+
+function updStats(){
+  const t=props.length, ok=props.filter(p=>(evals[p.id]||{}).rating==='ok').length,
+        no=props.filter(p=>(evals[p.id]||{}).rating==='no').length, pe=t-ok-no, pct=t?Math.round((ok+no)/t*100):0;
+  document.getElementById('st-t').textContent=`${t} props`;
+  document.getElementById('st-ok').textContent=`${ok} 👍`;
+  document.getElementById('st-no').textContent=`${no} 👎`;
+  document.getElementById('st-p').textContent=`${pe} pend.`;
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('prog-lbl').textContent=`${pct}% evaluado`;
+}
+
+// ── FILTER ──────────────────────────────────────────────────────
+function setF(f,btn){
+  filter=f;
+  document.querySelectorAll('.toolbar .tbtn:not(.yellow):not(.outline)').forEach(b=>b.className='tbtn');
+  btn.classList.add(f==='ok'?'aok':f==='no'?'ano':'active');
+  renderT();
+}
+
+// ── RATE / NOTE ─────────────────────────────────────────────────
+async function rate(pid,val){
+  if(!curPlan) return;
+  const prev=(evals[pid]||{}).rating, nr=prev===val?null:val, nota=(evals[pid]||{}).nota||'';
+  evals[pid]={rating:nr,nota}; renderT();
+  await db.from('evaluaciones').upsert({propiedad_id:pid,planilla_id:curPlan.id,rating:nr,nota,updated_at:new Date().toISOString()},{onConflict:'propiedad_id'});
+  toast(nr==='ok'?'👍 Interesante':nr==='no'?'👎 Descartada':'↩️ Calificación quitada');
+}
+const nt={};
+async function saveNote(pid,val){
+  if(!curPlan) return;
+  const rating=(evals[pid]||{}).rating||null; evals[pid]={rating,nota:val};
+  clearTimeout(nt[pid]); nt[pid]=setTimeout(async()=>{
+    await db.from('evaluaciones').upsert({propiedad_id:pid,planilla_id:curPlan.id,rating,nota:val,updated_at:new Date().toISOString()},{onConflict:'propiedad_id'});
+  },700);
+}
+
+// ── ADD/EDIT ────────────────────────────────────────────────────
+function openAdd(){ editId=null; document.getElementById('m-ti').textContent='＋ Nueva propiedad'; clrF(); openOv('ov-p'); }
+function openEdit(id){
+  const p=props.find(x=>x.id===id); if(!p) return; editId=id;
+  document.getElementById('m-ti').textContent='✏️ Editar propiedad';
+  document.getElementById('f-url').value=p.url||'';
+  document.getElementById('f-dir').value=p.dir||'';
+  document.getElementById('f-dorm').value=p.dorm!=null?p.dorm:0;
+  document.getElementById('f-patio').value=p.patio||'No';
+  document.getElementById('f-m2c').value=p.m2c||'';
+  document.getElementById('f-m2t').value=p.m2t||'';
+  document.getElementById('f-ubic').value=p.ubic||'Frente';
+  document.getElementById('f-valor').value=p.valor||'';
+  setAf('',''); openOv('ov-p');
+}
+function clrF(){
+  ['f-url','f-dir','f-m2c','f-m2t','f-valor'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-dorm').value='0'; document.getElementById('f-patio').value='No'; document.getElementById('f-ubic').value='Frente'; setAf('','');
+}
+async function saveProp(){
+  if(!curPlan){ toast('Seleccioná una planilla'); return; }
+  const dir=document.getElementById('f-dir').value.trim(); if(!dir){ toast('⚠️ Ingresá dirección'); return; }
+  const obj={planilla_id:curPlan.id,dir,dorm:document.getElementById('f-dorm').value,patio:document.getElementById('f-patio').value,
+    m2c:parseInt(document.getElementById('f-m2c').value)||null,m2t:parseInt(document.getElementById('f-m2t').value)||null,
+    ubic:document.getElementById('f-ubic').value,valor:document.getElementById('f-valor').value.trim(),url:document.getElementById('f-url').value.trim()};
+  if(editId){
+    const {error}=await db.from('propiedades').update(obj).eq('id',editId);
+    if(error){ toast('❌ Error'); return; }
+    const i=props.findIndex(x=>x.id===editId); if(i!==-1) props[i]={...props[i],...obj};
+    toast('✅ Actualizada');
+  } else {
+    obj.posicion=props.length;
+    const {data,error}=await db.from('propiedades').insert(obj).select().single();
+    if(error){ toast('❌ Error'); return; }
+    props.push(data); toast('✅ Agregada');
+  }
+  closeOv('ov-p'); renderT();
+}
+
+// ── DELETE ──────────────────────────────────────────────────────
+function askDel(id){ delId=id; const p=props.find(x=>x.id===id); document.getElementById('d-msg').textContent=`¿Eliminar "${p?p.dir:''}"?`; openOv('ov-d'); }
+async function confirmDel(){
+  if(!delId) return;
+  await db.from('propiedades').delete().eq('id',delId);
+  props=props.filter(x=>x.id!==delId); delete evals[delId];
+  await Promise.all(props.map((p,i)=>db.from('propiedades').update({posicion:i}).eq('id',p.id)));
+  closeOv('ov-d'); renderT(); toast('🗑️ Eliminada'); delId=null;
+}
+
+// ── AUTOFILL ────────────────────────────────────────────────────
+async function autofill(){
+  const url=document.getElementById('f-url').value.trim();
+  if(!url||!url.includes('zonaprop')){ setAf('er','⚠️ Link de ZonaProp inválido'); return; }
+  const btn=document.getElementById('afbtn'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Leyendo...';
+  setAf('ld','🔍 Consultando la publicación...');
+  try{
+    const res=await fetch('/.netlify/functions/autofill',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({url})
+    });
+    if(!res.ok) throw new Error('Error del servidor');
+    const o=await res.json();
+    if(o.error) throw new Error(o.error);
+    let n=0;
+    const map={dir:'f-dir',m2c:'f-m2c',m2t:'f-m2t',valor:'f-valor'};
+    Object.entries(map).forEach(([k,id])=>{ if(o[k]!=null){const el=document.getElementById(id);el.value=o[k];el.classList.add('filled');setTimeout(()=>el.classList.remove('filled'),2500);n++;} });
+    if(o.dorm!=null) document.getElementById('f-dorm').value=o.dorm;
+    if(o.patio) document.getElementById('f-patio').value=o.patio;
+    if(o.ubic)  document.getElementById('f-ubic').value=o.ubic;
+    setAf('ok',`✅ ${n} campos completados`);
+  } catch(e){ setAf('er','⚠️ No se pudo leer. Completá manualmente.'); }
+  finally{ btn.disabled=false; btn.innerHTML='✨ Completar'; }
+}
+function setAf(t,m){ const el=document.getElementById('afst'); el.className='afst '+t; el.textContent=m; }
+
+// ── EXPORT ──────────────────────────────────────────────────────
+function exportCSV(){
+  const rows=[['#','Dirección','Dorm.','M²Cub','M²Tot','Patio','Ubicación','Valor USD','Calificación','Notas','Link']];
+  props.forEach((p,i)=>{ const ev=evals[p.id]||{}; const r=ev.rating==='ok'?'👍':ev.rating==='no'?'👎':'—';
+    rows.push([i+1,p.dir,p.dorm,p.m2c||'',p.m2t||'',p.patio,p.ubic,p.valor,r,ev.nota||'',p.url||'']); });
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download=`${curPlan?curPlan.nombre:'props'}.csv`; a.click(); toast('📥 CSV exportado');
+}
+
+// ── UTILS ────────────────────────────────────────────────────────
+function openOv(id){ document.getElementById(id).classList.add('open'); }
+function closeOv(id){ document.getElementById(id).classList.remove('open'); }
+['ov-p','ov-d','ov-np','ov-sh'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{ if(e.target===e.currentTarget) closeOv(id); }); });
+let tt;
+function toast(m){ document.getElementById('tmsg').textContent=m; document.getElementById('toast').classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>document.getElementById('toast').classList.remove('show'),2600); }
+</script>
+</body>
+</html>
