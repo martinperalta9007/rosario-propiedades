@@ -539,7 +539,7 @@ async function autofill(){
 }
 function setAf(t,m){ const el=document.getElementById('afst'); el.className='afst '+t; el.textContent=m; }
 
-// ── EXPORT ──────────────────────────────────────────────────────
+// ── EXPORT ────────────────────────────────────────────────────── 
 function exportCSV(){
   const rows=[['#','Dirección','Dorm.','M²Cub','M²Tot','Patio','Ubicación','Valor USD','Calificación','Notas','Link']];
   props.forEach((p,i)=>{ const ev=evals[p.id]||{}; const r=ev.rating==='ok'?'👍':ev.rating==='no'?'👎':'—';
