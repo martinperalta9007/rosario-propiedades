@@ -206,7 +206,7 @@ function renderFicha(d) {
     ).join('');
     galeriaHTML = `
       <div class="galeria">
-        <img id="fp" src="${_fotos[0]}" />
+        <img id="fp" src="${_fotos[0]}" style="cursor:zoom-in;" onclick="lbAbrir(_fi)" />
         <button class="btn-nav prev" onclick="cambiarFoto(_fi-1)">&#8249;</button>
         <button class="btn-nav next" onclick="cambiarFoto(_fi+1)">&#8250;</button>
         <div id="ctr" class="counter">1 / ${_fotos.length}</div>
