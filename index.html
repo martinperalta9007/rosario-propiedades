@@ -107,9 +107,9 @@ td{padding:8px 8px;font-size:12.5px;text-align:center;color:var(--txt);vertical-
 td:first-child{text-align:left;padding-left:15px}
 
 /* Indicador visto */
-.visto-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-right:5px;vertical-align:middle;flex-shrink:0}
+.visto-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;margin-right:4px;vertical-align:middle;flex-shrink:0;font-size:11px;font-weight:700}
 .visto-si{background:#E8F5E9;color:#2D7A3A}
-.visto-no{background:#f0f0f0;color:#aaa}
+.visto-no{background:#f0f0f0;color:transparent;border:1.5px solid #ddd}
 
 /* Foto miniatura */
 .prop-thumb{width:52px;height:40px;border-radius:6px;object-fit:cover;margin-right:8px;vertical-align:middle;flex-shrink:0;border:1px solid var(--bdr)}
@@ -156,8 +156,8 @@ td:first-child{text-align:left;padding-left:15px}
   td{padding:10px 7px;font-size:12px}
   td:first-child{padding-left:10px}
   thead th:nth-child(5),td:nth-child(5){display:none}
-  .visto-badge{font-size:10px;padding:2px 6px;margin-right:3px}
-  .rn{font-size:9px;padding:1px 4px;margin-right:3px;min-width:16px}
+  .visto-badge{width:16px;height:16px;font-size:10px;margin-right:3px}
+
   .pdir{font-size:12px}
   .prop-cell{flex-wrap:nowrap;gap:3px;align-items:center}
   .star{font-size:15px}
@@ -173,6 +173,16 @@ td:first-child{text-align:left;padding-left:15px}
   .sw input{width:130px;font-size:11px}
   .prog-w,.plan-bar,.tw{padding-left:8px;padding-right:8px}
 }
+
+.nota-wrap{cursor:pointer;min-width:70px;max-width:130px;padding:4px 7px;border:1.5px solid var(--bdr);border-radius:7px;font-size:11.5px;color:var(--txt);transition:border-color .15s;background:transparent;min-height:28px;display:flex;align-items:center}
+.nota-wrap:hover{border-color:var(--bordo);background:#fff}
+.nota-preview{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px;display:block}
+.nota-empty{color:var(--txt-l);font-style:italic;font-size:11px}
+/* Modal nota */
+.nota-modal{background:#fff;border-radius:16px;padding:20px 22px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.18);animation:up .2s ease}
+.nota-modal h3{font-family:'Playfair Display',serif;font-size:16px;color:var(--bordo);margin-bottom:12px}
+.nota-modal textarea{width:100%;padding:10px 12px;border:1.5px solid var(--bdr);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--txt);outline:none;transition:border-color .15s;resize:vertical;min-height:120px;line-height:1.6}
+.nota-modal textarea:focus{border-color:var(--bordo)}
 
 /* MODALS */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
@@ -269,7 +279,7 @@ td:first-child{text-align:left;padding-left:15px}
   <div class="tw">
     <table>
       <thead><tr>
-        <th>#&nbsp; Dirección</th>
+        <th>Dirección</th>
         <th>Dorm.</th><th>M² Cub.</th><th>M² Tot.</th>
         <th>Patio</th><th>Valor USD</th><th>Link</th>
         <th>Puntuación</th><th>Notas</th>
@@ -299,6 +309,15 @@ td:first-child{text-align:left;padding-left:15px}
       <div class="fg"><label>Valor USD</label><input type="text" id="f-valor" placeholder="55.000"></div>
     </div>
     <div class="ma"><button class="btnc" onclick="closeOv('ov-p')">Cancelar</button><button class="btns" onclick="saveProp()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- MODAL: nota expandible -->
+<div class="ov" id="ov-nota">
+  <div class="nota-modal">
+    <h3 id="nota-titulo">Nota</h3>
+    <textarea id="nota-ta" placeholder="Escribí tu nota acá..."></textarea>
+    <div class="ma"><button class="btnc" onclick="closeNota()">Cancelar</button><button class="btns" onclick="saveNotaModal()">Guardar</button></div>
   </div>
 </div>
 
@@ -478,15 +497,14 @@ function renderT(){
 
     const rc=(score?'s'+score:'') + ' ' + (visto?'visto-row':'novisto-row');
     const vistoBadge = visto
-      ? '<span class="visto-badge visto-si">Visto</span>'
-      : '<span class="visto-badge visto-no">Sin ver</span>';
+      ? '<span class="visto-badge visto-si">✓</span>'
+      : '<span class="visto-badge visto-no"></span>';
 
     const tr=document.createElement('tr'); tr.className=rc.trim();
     tr.innerHTML=`
       <td data-label="">
         <div class="prop-cell">
           ${vistoBadge}
-          <span class="rn">${i+1}</span>
           <span class="pdir">${p.dir||'—'}</span>
         </div>
       </td>
@@ -497,7 +515,7 @@ function renderT(){
       <td data-label="Valor"><span class="precio">${p.valor?'USD '+p.valor:'—'}</span></td>
       <td data-label="Link">${p.url?`<a class="lbtn" href="${p.url}" target="_blank" rel="noopener" onclick="markVisto(${p.id})">🔗 Ver</a>`:'—'}</td>
       <td data-label="Puntuación">${starsHTML(p.id, score)}</td>
-      <td data-label="Notas"><textarea class="ni" rows="1" placeholder="Nota..." onchange="saveNote(${p.id},this.value)">${ev.nota||''}</textarea></td>
+      <td data-label="Notas"><div class="nota-wrap" onclick="openNota(${p.id},this)">${ev.nota?`<span class="nota-preview">${ev.nota}</span>`:'<span class="nota-empty">+ nota</span>'}</div></td>
       ${isAdmin?`<td data-label=""><div class="ab"><button class="eb" onclick="openEdit(${p.id})">✏️</button><button class="db" onclick="askDel(${p.id})">🗑️</button></div></td>`:''}
     `;
     tb.appendChild(tr);
@@ -651,9 +669,35 @@ function exportCSV(){
   a.download=`${curPlan?curPlan.nombre:'props'}.csv`; a.click(); toast('📥 CSV exportado');
 }
 
+// ── NOTA MODAL ─────────────────────────────────────────────────
+let notaPid = null;
+function openNota(pid, el){
+  notaPid = pid;
+  const ev = evals[pid]||{};
+  const p = props.find(x=>x.id===pid);
+  document.getElementById('nota-titulo').textContent = p ? p.dir : 'Nota';
+  document.getElementById('nota-ta').value = ev.nota||'';
+  openOv('ov-nota');
+  setTimeout(()=>{ const ta=document.getElementById('nota-ta'); ta.focus(); ta.selectionStart=ta.selectionEnd=ta.value.length; },100);
+}
+function closeNota(){ closeOv('ov-nota'); notaPid=null; }
+async function saveNotaModal(){
+  if(!notaPid||!curPlan) return;
+  const val = document.getElementById('nota-ta').value;
+  const ev = evals[notaPid]||{};
+  evals[notaPid] = {...ev, nota:val};
+  renderT();
+  closeNota();
+  await db.from('evaluaciones').upsert(
+    {propiedad_id:notaPid,planilla_id:curPlan.id,rating:ev.rating||null,nota:val,score:ev.score||null,visto:ev.visto||false,updated_at:new Date().toISOString()},
+    {onConflict:'propiedad_id'}
+  );
+  toast('📝 Nota guardada');
+}
+
 function openOv(id){ document.getElementById(id).classList.add('open'); }
 function closeOv(id){ document.getElementById(id).classList.remove('open'); }
-['ov-p','ov-d','ov-np','ov-sh'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{ if(e.target===e.currentTarget) closeOv(id); }); });
+['ov-p','ov-d','ov-np','ov-sh','ov-nota'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{ if(e.target===e.currentTarget) closeOv(id); }); });
 let tt;
 function toast(m){ document.getElementById('tmsg').textContent=m; document.getElementById('toast').classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>document.getElementById('toast').classList.remove('show'),2600); }
 </script>
