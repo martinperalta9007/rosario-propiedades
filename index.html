@@ -81,7 +81,7 @@ header{background:var(--bordo);position:sticky;top:0;z-index:100;box-shadow:0 4p
 
 /* TABLE — desktop */
 .tw{max-width:1500px;margin:13px auto 40px;padding:0 20px;overflow-x:auto}
-table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shd);min-width:820px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shd);min-width:880px}
 thead tr{background:var(--bordo)}
 thead th{padding:11px 8px;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.92);text-transform:uppercase;letter-spacing:.07em;text-align:center;white-space:nowrap}
 thead th:nth-child(1){text-align:left;padding-left:15px}
@@ -89,6 +89,9 @@ tbody tr{border-bottom:1px solid var(--beige);transition:background .1s}
 tbody tr:nth-child(even){background:var(--beige-l)}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:#EDE0D0!important}
+/* Fila visto — borde izquierdo verde destacado */
+tbody tr.visto-row{border-left:4px solid #5ECC6A!important}
+tbody tr.novisto-row{border-left:4px solid #ddd!important;opacity:.85}
 /* Colores por puntuación */
 tbody tr.s5{background:#E8F5E9!important}
 tbody tr.s4{background:#F0F9F1!important}
@@ -104,9 +107,14 @@ td{padding:8px 8px;font-size:12.5px;text-align:center;color:var(--txt);vertical-
 td:first-child{text-align:left;padding-left:15px}
 
 /* Indicador visto */
-.visto-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;flex-shrink:0}
-.visto-si{background:#5ECC6A}
-.visto-no{background:#ddd}
+.visto-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-right:5px;vertical-align:middle;flex-shrink:0}
+.visto-si{background:#E8F5E9;color:#2D7A3A}
+.visto-no{background:#f0f0f0;color:#aaa}
+
+/* Foto miniatura */
+.prop-thumb{width:52px;height:40px;border-radius:6px;object-fit:cover;margin-right:8px;vertical-align:middle;flex-shrink:0;border:1px solid var(--bdr)}
+.prop-thumb-placeholder{width:52px;height:40px;border-radius:6px;background:var(--beige);display:inline-flex;align-items:center;justify-content:center;font-size:18px;margin-right:8px;vertical-align:middle;flex-shrink:0;border:1px solid var(--bdr)}
+.prop-cell{display:flex;align-items:center}
 
 .rn{display:inline-block;background:var(--bordo);color:#fff;font-size:9.5px;font-weight:700;border-radius:4px;padding:1px 4px;margin-right:4px;min-width:20px;text-align:center;vertical-align:middle}
 .pdir{font-weight:600;font-size:12.5px;color:var(--bordo-d);vertical-align:middle}
@@ -157,7 +165,9 @@ td:first-child{text-align:left;padding-left:15px}
   td:first-child::before{display:none}
   .ni{min-width:0;width:150px}
   .stars{justify-content:flex-end}
-  table{min-width:0;box-shadow:none;background:transparent;border-radius:0}
+  tbody tr.visto-row{border-left:4px solid #5ECC6A!important}
+  tbody tr.novisto-row{border-left:4px solid #ddd!important}
+  .prop-cell{flex-wrap:wrap;gap:4px}
   .sw input{width:140px}
   .h-right .stat-pill{display:none}
   .toolbar{gap:5px}
@@ -259,6 +269,7 @@ td:first-child{text-align:left;padding-left:15px}
     <table>
       <thead><tr>
         <th>#&nbsp; Dirección</th>
+        <th>Foto</th>
         <th>Dorm.</th><th>M² Cub.</th><th>M² Tot.</th>
         <th>Patio</th><th>Valor USD</th><th>Link</th>
         <th>Puntuación</th><th>Notas</th>
@@ -465,14 +476,27 @@ function renderT(){
     if(q&&!(p.dir||'').toLowerCase().includes(q)) return;
     v++;
 
-    const rc=rowClass(score);
-    const tr=document.createElement('tr'); tr.className=rc;
+    const rc=(score?'s'+score:'') + ' ' + (visto?'visto-row':'novisto-row');
+    const vistoBadge = visto
+      ? '<span class="visto-badge visto-si">✓ Visto</span>'
+      : '<span class="visto-badge visto-no">● Sin ver</span>';
+
+    // Extraer ID de ZonaProp para thumbnail
+    const zpId = p.url ? (p.url.match(/\-(\d{7,9})\.html/) || [])[1] : null;
+    const thumbHtml = zpId
+      ? `<img class="prop-thumb" src="https://img.zonaprop.com.ar/fit-in/296x220/photos/${zpId}-1.jpg" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'" alt=""><span class="prop-thumb-placeholder" style="display:none">🏠</span>`
+      : `<span class="prop-thumb-placeholder">🏠</span>`;
+
+    const tr=document.createElement('tr'); tr.className=rc.trim();
     tr.innerHTML=`
       <td data-label="">
-        <span class="visto-dot ${visto?'visto-si':'visto-no'}" title="${visto?'Visto':'Sin ver'}"></span>
-        <span class="rn">${i+1}</span>
-        <span class="pdir">${p.dir||'—'}</span>
+        <div class="prop-cell">
+          ${vistoBadge}
+          <span class="rn">${i+1}</span>
+          <span class="pdir">${p.dir||'—'}</span>
+        </div>
       </td>
+      <td data-label="Foto" style="text-align:center">${thumbHtml}</td>
       <td data-label="Dorm.">${dLbl(p.dorm)}</td>
       <td data-label="M² Cub.">${p.m2c?p.m2c+' m²':'—'}</td>
       <td data-label="M² Tot.">${p.m2t?p.m2t+' m²':'—'}</td>
