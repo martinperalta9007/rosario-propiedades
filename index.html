@@ -9,8 +9,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'DM Sans', sans-serif; color: #1a1a1a; background: #fafaf9; }
 /* Lightbox */
-#lightbox { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:9999; align-items:center; justify-content:center; }
-#lightbox.active { display:flex; }
+#lightbox { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:9999; align-items:center; justify-content:center; flex-direction:row; }
 #lightbox img { max-width:92vw; max-height:88vh; object-fit:contain; border-radius:4px; }
 #lightbox .lb-prev, #lightbox .lb-next { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.15); color:#fff; border:none; border-radius:50%; width:48px; height:48px; font-size:26px; cursor:pointer; line-height:48px; text-align:center; padding:0; }
 #lightbox .lb-prev { left:16px; }
@@ -112,14 +111,9 @@ function cambiarFoto(idx) {
 }
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight') {
-    if (document.getElementById('lightbox').classList.contains('active')) lbCambiar(_lbIdx+1);
-    else cambiarFoto(_fi + 1);
-  }
-  if (e.key === 'ArrowLeft') {
-    if (document.getElementById('lightbox').classList.contains('active')) lbCambiar(_lbIdx-1);
-    else cambiarFoto(_fi - 1);
-  }
+  const lbOpen = document.getElementById('lightbox').style.display === 'flex';
+  if (e.key === 'ArrowRight') lbOpen ? lbCambiar(_lbIdx+1) : cambiarFoto(_fi+1);
+  if (e.key === 'ArrowLeft') lbOpen ? lbCambiar(_lbIdx-1) : cambiarFoto(_fi-1);
   if (e.key === 'Escape') lbCerrar();
 });
 
@@ -130,7 +124,9 @@ let _lbFotos = [];
 function lbAbrir(idx) {
   _lbFotos = _fotos;
   _lbIdx = idx;
-  document.getElementById('lightbox').classList.add('active');
+  const lb = document.getElementById('lightbox');
+  lb.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
   lbMostrar();
 }
 
@@ -146,7 +142,8 @@ function lbMostrar() {
 }
 
 function lbCerrar() {
-  document.getElementById('lightbox').classList.remove('active');
+  document.getElementById('lightbox').style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 // Cerrar al hacer clic fuera de la imagen
