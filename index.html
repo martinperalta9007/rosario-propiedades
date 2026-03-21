@@ -61,7 +61,7 @@ header{background:var(--bordo);position:sticky;top:0;z-index:100;box-shadow:0 4p
 .pchip{padding:5px 12px;border-radius:20px;border:1.5px solid var(--bdr);background:#fff;font-size:12px;font-weight:500;color:var(--txt-m);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px}
 .pchip:hover{border-color:var(--bordo);color:var(--bordo)}
 .pchip.sel{background:var(--bordo);border-color:var(--bordo);color:#fff}
-.pchip .xb{opacity:.5;font-size:15px;line-height:1;margin-left:2px;cursor:pointer}
+.pchip .xb{opacity:.5;font-size:15px;line-height:1;margin-left:2px}
 .pchip .xb:hover{opacity:1}
 
 /* TOOLBAR */
@@ -79,9 +79,9 @@ header{background:var(--bordo);position:sticky;top:0;z-index:100;box-shadow:0 4p
 .sw input:focus{border-color:var(--bordo)}
 .sico{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--txt-l);font-size:13px;pointer-events:none}
 
-/* TABLE */
+/* TABLE — desktop */
 .tw{max-width:1500px;margin:13px auto 40px;padding:0 20px;overflow-x:auto}
-table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shd);min-width:880px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shd);min-width:820px}
 thead tr{background:var(--bordo)}
 thead th{padding:11px 8px;font-size:10.5px;font-weight:600;color:rgba(255,255,255,.92);text-transform:uppercase;letter-spacing:.07em;text-align:center;white-space:nowrap}
 thead th:nth-child(1){text-align:left;padding-left:15px}
@@ -89,24 +89,47 @@ tbody tr{border-bottom:1px solid var(--beige);transition:background .1s}
 tbody tr:nth-child(even){background:var(--beige-l)}
 tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:#EDE0D0!important}
-tbody tr.rok{background:var(--green-l)!important}
-tbody tr.rno{background:var(--red-l)!important}
+/* Colores por puntuación */
+tbody tr.s5{background:#E8F5E9!important}
+tbody tr.s4{background:#F0F9F1!important}
+tbody tr.s3{background:#FFFDE7!important}
+tbody tr.s2{background:#FFF3E0!important}
+tbody tr.s1{background:#FDECEA!important}
+tbody tr.s5:hover{background:#d5edda!important}
+tbody tr.s4:hover{background:#ddf0df!important}
+tbody tr.s3:hover{background:#fff9c4!important}
+tbody tr.s2:hover{background:#ffe0b2!important}
+tbody tr.s1:hover{background:#f8d5d2!important}
 td{padding:8px 8px;font-size:12.5px;text-align:center;color:var(--txt);vertical-align:middle}
 td:first-child{text-align:left;padding-left:15px}
-.rn{display:inline-block;background:var(--bordo);color:#fff;font-size:9.5px;font-weight:700;border-radius:4px;padding:1px 4px;margin-right:4px;min-width:20px;text-align:center}
-.pdir{font-weight:600;font-size:12.5px;color:var(--bordo-d)}
-.bdg{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:600}
-.bf{background:#E8F5E9;color:#2D7A3A}.bi{background:#FFF3E0;color:#8B5800}.bc{background:#EDE7F6;color:#4527A0}.be{background:#FDE8E8;color:var(--bordo)}
+
+/* Indicador visto */
+.visto-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;flex-shrink:0}
+.visto-si{background:#5ECC6A}
+.visto-no{background:#ddd}
+
+.rn{display:inline-block;background:var(--bordo);color:#fff;font-size:9.5px;font-weight:700;border-radius:4px;padding:1px 4px;margin-right:4px;min-width:20px;text-align:center;vertical-align:middle}
+.pdir{font-weight:600;font-size:12.5px;color:var(--bordo-d);vertical-align:middle}
 .precio{font-weight:700;color:var(--green);white-space:nowrap}
+
+/* Link btn — marca como visto al hacer click */
 .lbtn{display:inline-flex;align-items:center;gap:3px;background:var(--bordo);color:#fff;text-decoration:none;font-size:10.5px;font-weight:600;padding:4px 9px;border-radius:16px;transition:background .15s,transform .1s}
 .lbtn:hover{background:var(--bordo-d);transform:translateY(-1px)}
-.rc{display:flex;gap:4px;justify-content:center;align-items:center}
-.rb{width:32px;height:32px;border-radius:50%;border:2px solid #ddd;font-size:15px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;background:#f5f5f5}
-.rb:hover{transform:scale(1.18)}
-.rb.ok.sel{border-color:var(--green);background:var(--green-l);box-shadow:0 0 0 3px rgba(45,122,58,.18);transform:scale(1.1)}
-.rb.no.sel{border-color:var(--red);background:var(--red-l);box-shadow:0 0 0 3px rgba(192,57,43,.18);transform:scale(1.1)}
-.rb.ok:hover{border-color:var(--green);background:var(--green-l)}
-.rb.no:hover{border-color:var(--red);background:var(--red-l)}
+
+/* STARS */
+.stars{display:flex;gap:2px;justify-content:center;align-items:center}
+.star{font-size:18px;cursor:pointer;transition:transform .1s;line-height:1;color:#ddd;user-select:none}
+.star:hover{transform:scale(1.2)}
+.star.on{color:var(--yellow)}
+.star.s1on{color:#e74c3c}
+.star.s2on{color:#e67e22}
+.star.s3on{color:#f39c12}
+.star.s4on{color:#27ae60}
+.star.s5on{color:#2980b9}
+
+/* Etiqueta puntuación */
+.score-lbl{font-size:9.5px;color:var(--txt-l);margin-top:2px;text-align:center;min-height:13px}
+
 .ni{width:100%;min-width:95px;padding:4px 7px;border:1.5px solid var(--bdr);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:11.5px;color:var(--txt);background:transparent;outline:none;transition:border-color .15s;resize:none}
 .ni:focus{border-color:var(--bordo);background:#fff}
 .ni::placeholder{color:var(--txt-l);font-style:italic}
@@ -115,6 +138,30 @@ td:first-child{text-align:left;padding-left:15px}
 .eb{background:var(--yellow-l);color:var(--bordo)}.eb:hover{background:var(--yellow);transform:scale(1.1)}
 .db{background:var(--red-l);color:var(--red)}.db:hover{background:#f5b8b4;transform:scale(1.1)}
 .erow td{text-align:center!important;padding:36px!important;color:var(--txt-l);font-size:13px}
+
+/* MOBILE CARDS */
+@media(max-width:700px){
+  .tw{padding:0 10px}
+  table,thead,tbody,th,td,tr{display:block}
+  thead{display:none}
+  tbody tr{background:#fff;border-radius:14px;margin-bottom:12px;padding:14px 16px;box-shadow:var(--shd);border:none!important}
+  tbody tr.s5{background:#E8F5E9!important}
+  tbody tr.s4{background:#F0F9F1!important}
+  tbody tr.s3{background:#FFFDE7!important}
+  tbody tr.s2{background:#FFF3E0!important}
+  tbody tr.s1{background:#FDECEA!important}
+  td{display:flex;align-items:center;justify-content:space-between;padding:6px 0;text-align:right;border-bottom:1px solid var(--beige);font-size:13px}
+  td:last-child{border-bottom:none}
+  td:first-child{justify-content:flex-start;border-bottom:2px solid var(--beige);padding-bottom:10px;margin-bottom:4px}
+  td::before{content:attr(data-label);font-size:10px;font-weight:700;color:var(--txt-l);text-transform:uppercase;letter-spacing:.05em;text-align:left;flex-shrink:0}
+  td:first-child::before{display:none}
+  .ni{min-width:0;width:150px}
+  .stars{justify-content:flex-end}
+  table{min-width:0;box-shadow:none;background:transparent;border-radius:0}
+  .sw input{width:140px}
+  .h-right .stat-pill{display:none}
+  .toolbar{gap:5px}
+}
 
 /* MODALS */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
@@ -162,7 +209,6 @@ td:first-child{text-align:left;padding-left:15px}
 @media(max-width:640px){
   .fg2{grid-template-columns:1fr}.modal{padding:18px 13px}
   .ur{flex-direction:column}.afbtn{width:100%;justify-content:center}
-  .h-right .stat-pill{display:none}
 }
 </style>
 </head>
@@ -178,14 +224,12 @@ td:first-child{text-align:left;padding-left:15px}
       <span class="rt-dot" title="Tiempo real activo"></span>
       <div class="stat-pill"><span class="dot dot-t"></span><span id="st-t">—</span></div>
       <div class="stat-pill"><span class="dot dot-ok"></span><span id="st-ok">—</span></div>
-      <div class="stat-pill"><span class="dot dot-no"></span><span id="st-no">—</span></div>
       <div class="stat-pill"><span class="dot dot-p"></span><span id="st-p">—</span></div>
       <span id="role-badge"></span>
     </div>
   </div>
 </header>
 
-<!-- LOGIN -->
 <div id="sc-login" style="display:flex">
   <div class="login-card">
     <div class="login-logo">R</div>
@@ -197,15 +241,14 @@ td:first-child{text-align:left;padding-left:15px}
   </div>
 </div>
 
-<!-- MAIN UI (hidden until login/viewer) -->
 <div id="main-ui" style="display:none">
   <div class="prog-w"><div class="prog-bg"><div class="prog-fill" id="prog"></div></div><div class="prog-lbl" id="prog-lbl">0% evaluado</div></div>
   <div class="plan-bar" id="plan-bar"></div>
   <div class="toolbar" id="toolbar">
     <button class="tbtn active" onclick="setF('all',this)">Todas</button>
-    <button class="tbtn" onclick="setF('ok',this)">👍 Positivas</button>
-    <button class="tbtn" onclick="setF('no',this)">👎 Negativas</button>
-    <button class="tbtn" onclick="setF('pend',this)">⏳ Pendientes</button>
+    <button class="tbtn" onclick="setF('vistas',this)">👁️ Vistas</button>
+    <button class="tbtn" onclick="setF('novistas',this)">🔲 Sin ver</button>
+    <button class="tbtn" onclick="setF('top',this)">⭐ Top</button>
     <button class="tbtn yellow" id="btn-add" style="display:none" onclick="openAdd()">＋ Agregar</button>
     <button class="tbtn outline" id="btn-np" style="display:none" onclick="openNewPlan()">＋ Nueva planilla</button>
     <button class="tbtn outline" id="btn-sh" style="display:none" onclick="openShare()">🔗 Compartir</button>
@@ -215,9 +258,11 @@ td:first-child{text-align:left;padding-left:15px}
   <div class="tw">
     <table>
       <thead><tr>
-        <th>#&nbsp; Dirección</th><th>Dorm.</th><th>M² Cub.</th><th>M² Tot.</th>
-        <th>Patio</th><th>Ubicación</th><th>Valor USD</th><th>Link</th>
-        <th>Notas</th><th>Calificación</th><th id="th-ac" style="display:none">Acciones</th>
+        <th>#&nbsp; Dirección</th>
+        <th>Dorm.</th><th>M² Cub.</th><th>M² Tot.</th>
+        <th>Patio</th><th>Valor USD</th><th>Link</th>
+        <th>Puntuación</th><th>Notas</th>
+        <th id="th-ac" style="display:none">Acciones</th>
       </tr></thead>
       <tbody id="tb"></tbody>
     </table>
@@ -240,8 +285,6 @@ td:first-child{text-align:left;padding-left:15px}
       <div class="fg"><label>Patio</label><select id="f-patio"><option value="No">No</option><option value="Sí">Sí</option></select></div>
       <div class="fg"><label>M² Cubiertos</label><input type="number" id="f-m2c" placeholder="42"></div>
       <div class="fg"><label>M² Totales</label><input type="number" id="f-m2t" placeholder="48"></div>
-      <div class="fg"><label>Ubicación</label>
-        <select id="f-ubic"><option>Frente</option><option>Interno</option><option>Contrafrente</option><option>Dúplex</option><option>Casa</option><option>Reciclado</option></select></div>
       <div class="fg"><label>Valor USD</label><input type="text" id="f-valor" placeholder="55.000"></div>
     </div>
     <div class="ma"><button class="btnc" onclick="closeOv('ov-p')">Cancelar</button><button class="btns" onclick="saveProp()">Guardar</button></div>
@@ -276,7 +319,7 @@ td:first-child{text-align:left;padding-left:15px}
       <button class="cbtn" onclick="copyUrl()">📋 Copiar link</button>
     </div>
     <p style="font-size:12px;color:var(--txt-l);line-height:1.6">
-      Compartí este link por WhatsApp o email. El evaluador ve la planilla en tiempo real y puede calificar con 👍/👎 y agregar notas. Vos ves todo al instante desde tu panel.
+      El evaluador ve la planilla, puede puntuar con ⭐ y agregar notas. Vos ves todo al instante.
     </p>
     <div class="ma"><button class="btns" onclick="closeOv('ov-sh')">Listo</button></div>
   </div>
@@ -285,27 +328,25 @@ td:first-child{text-align:left;padding-left:15px}
 <div id="toast"><span id="tmsg"></span></div>
 
 <script>
-// ── SUPABASE ────────────────────────────────────────────────────
-const SUPA_URL = 'https://kzgbostzgfciosaydqpr.supabase.co';
-const SUPA_KEY = 'sb_publishable_pWFKYkogjA-3ZwlvyXV4RA_W3FkmvTO';
-const ADMIN_PW = 'rosario2026'; // ← podés cambiarlo
+const SUPA_URL='https://kzgbostzgfciosaydqpr.supabase.co';
+const SUPA_KEY='sb_publishable_pWFKYkogjA-3ZwlvyXV4RA_W3FkmvTO';
+const ADMIN_PW='rosario2026';
+const db=supabase.createClient(SUPA_URL,SUPA_KEY);
 
-const db = supabase.createClient(SUPA_URL, SUPA_KEY);
+let isAdmin=false,planillas=[],curPlan=null;
+let props=[],evals={},filter='all',editId=null,delId=null,rtCh=null;
 
-// ── STATE ───────────────────────────────────────────────────────
-let isAdmin=false, planillas=[], curPlan=null;
-let props=[], evals={}, filter='all', editId=null, delId=null, rtCh=null;
+const SCORE_LABELS=['','Muy malo','Regular','Neutro','Bueno','Excelente'];
+const SCORE_COLORS=['','#e74c3c','#e67e22','#f39c12','#27ae60','#2980b9'];
 
-// ── BOOT ────────────────────────────────────────────────────────
 (async()=>{
-  const pid = new URLSearchParams(location.search).get('p');
+  const pid=new URLSearchParams(location.search).get('p');
   if(pid){ await startViewer(pid); } else { showLogin(); }
 })();
 
 function showLogin(){ document.getElementById('sc-login').style.display='flex'; document.getElementById('main-ui').style.display='none'; }
 function showMain(){ document.getElementById('sc-login').style.display='none'; document.getElementById('main-ui').style.display='block'; }
 
-// ── LOGIN ───────────────────────────────────────────────────────
 async function tryLogin(){
   if(document.getElementById('pw').value.trim()!==ADMIN_PW){ document.getElementById('lerr').textContent='Contraseña incorrecta.'; return; }
   isAdmin=true;
@@ -316,10 +357,9 @@ async function tryLogin(){
   await loadPlanillas();
 }
 
-// ── VIEWER ──────────────────────────────────────────────────────
 async function startViewer(pid){
   const {data:pl}=await db.from('planillas').select('*').eq('id',pid).single();
-  if(!pl){ showMain(); document.getElementById('tb').innerHTML='<tr class="erow"><td colspan="11">Planilla no encontrada o link incorrecto.</td></tr>'; return; }
+  if(!pl){ showMain(); document.getElementById('tb').innerHTML='<tr class="erow"><td colspan="10">Planilla no encontrada.</td></tr>'; return; }
   curPlan=pl;
   document.getElementById('role-badge').innerHTML='<span class="badge-viewer">EVALUADOR</span>';
   document.getElementById('h-sub').textContent=pl.nombre;
@@ -329,25 +369,27 @@ async function startViewer(pid){
   subRT();
 }
 
-// ── PLANILLAS ───────────────────────────────────────────────────
 async function loadPlanillas(){
   const {data}=await db.from('planillas').select('*').order('created_at');
   planillas=data||[];
   renderBar();
   if(planillas.length){ await selPlan(planillas[0]); }
-  else { document.getElementById('tb').innerHTML='<tr class="erow"><td colspan="11">No tenés planillas. Creá una con "+ Nueva planilla".</td></tr>'; }
+  else { document.getElementById('tb').innerHTML='<tr class="erow"><td colspan="10">Creá una planilla con "+ Nueva planilla".</td></tr>'; }
 }
+
 function renderBar(){
   document.getElementById('plan-bar').innerHTML=planillas.map(p=>`
     <div class="pchip ${curPlan&&curPlan.id===p.id?'sel':''}" onclick='selPlan(${JSON.stringify(p)})'>
       ${p.nombre}<span class="xb" onclick="event.stopPropagation();delPlan('${p.id}','${p.nombre.replace(/'/g,"\\'")}')">×</span>
     </div>`).join('')||'<span style="font-size:12px;color:var(--txt-l)">Sin planillas</span>';
 }
+
 async function selPlan(p){
   curPlan=p; document.getElementById('h-sub').textContent=p.nombre;
   renderBar(); if(rtCh) db.removeChannel(rtCh);
   await loadProps(); subRT();
 }
+
 async function openNewPlan(){ document.getElementById('np-name').value=''; openOv('ov-np'); setTimeout(()=>document.getElementById('np-name').focus(),80); }
 async function createPlan(){
   const n=document.getElementById('np-name').value.trim(); if(!n) return;
@@ -356,7 +398,7 @@ async function createPlan(){
   planillas.push(data); closeOv('ov-np'); await selPlan(data); toast('✅ Planilla creada');
 }
 async function delPlan(id,nombre){
-  if(!confirm(`¿Eliminar la planilla "${nombre}" y todo su contenido?`)) return;
+  if(!confirm(`¿Eliminar "${nombre}" y todo su contenido?`)) return;
   await db.from('planillas').delete().eq('id',id);
   planillas=planillas.filter(p=>p.id!==id);
   if(curPlan&&curPlan.id===id){ curPlan=planillas[0]||null; if(curPlan) await selPlan(curPlan); else { props=[]; evals={}; renderT(); renderBar(); } }
@@ -364,7 +406,6 @@ async function delPlan(id,nombre){
   toast('🗑️ Planilla eliminada');
 }
 
-// ── SHARE ───────────────────────────────────────────────────────
 function openShare(){
   if(!curPlan){ toast('Seleccioná una planilla'); return; }
   document.getElementById('sh-url').textContent=`${location.origin}${location.pathname}?p=${curPlan.id}`;
@@ -372,7 +413,6 @@ function openShare(){
 }
 function copyUrl(){ navigator.clipboard.writeText(document.getElementById('sh-url').textContent).then(()=>toast('📋 Link copiado')); }
 
-// ── PROPS ───────────────────────────────────────────────────────
 async function loadProps(){
   if(!curPlan){ props=[]; evals={}; renderT(); return; }
   const [pr,er]=await Promise.all([
@@ -380,90 +420,136 @@ async function loadProps(){
     db.from('evaluaciones').select('*').eq('planilla_id',curPlan.id)
   ]);
   props=pr.data||[]; evals={};
-  (er.data||[]).forEach(e=>{ evals[e.propiedad_id]={rating:e.rating,nota:e.nota||''}; });
+  (er.data||[]).forEach(e=>{ evals[e.propiedad_id]={rating:e.rating,nota:e.nota||'',score:e.score||null,visto:e.visto||false}; });
   renderT();
 }
 
-// ── REALTIME ────────────────────────────────────────────────────
 function subRT(){
   if(!curPlan) return;
   rtCh=db.channel('ev-'+curPlan.id)
     .on('postgres_changes',{event:'*',schema:'public',table:'evaluaciones',filter:`planilla_id=eq.${curPlan.id}`},
-      p=>{ const e=p.new; if(e&&e.propiedad_id){ evals[e.propiedad_id]={rating:e.rating,nota:e.nota||''}; renderT(); } })
+      p=>{ const e=p.new; if(e&&e.propiedad_id){ evals[e.propiedad_id]={rating:e.rating,nota:e.nota||'',score:e.score||null,visto:e.visto||false}; renderT(); } })
     .subscribe();
 }
 
-// ── RENDER ──────────────────────────────────────────────────────
 function dLbl(d){ return d==='Of.'||d==='Oficina'?'Oficina':d==0?'Mono.':d+' dorm.'; }
-function uBdg(u){ const m={Frente:'bf',Interno:'bi',Contrafrente:'bc'}; return `<span class="bdg ${m[u]||'be'}">${u||'—'}</span>`; }
+
+function starsHTML(pid, score){
+  const labels=['','😞 Muy malo','😐 Regular','😊 Neutro','👍 Bueno','🌟 Excelente'];
+  let h='<div class="stars">';
+  for(let i=1;i<=5;i++){
+    const on = score && i<=score;
+    h+=`<span class="star ${on?'on s'+i+'on':''}" onclick="setScore(${pid},${i})" title="${labels[i]}">★</span>`;
+  }
+  h+='</div>';
+  h+=`<div class="score-lbl">${score?labels[score]:''}</div>`;
+  return h;
+}
+
+function rowClass(score){
+  if(!score) return '';
+  return 's'+score;
+}
 
 function renderT(){
   const q=(document.querySelector('.sw input')||{value:''}).value.toLowerCase();
   const tb=document.getElementById('tb'); tb.innerHTML=''; let v=0;
+
   props.forEach((p,i)=>{
-    const ev=evals[p.id]||{}, r=ev.rating||null;
-    if(filter==='ok'&&r!=='ok') return; if(filter==='no'&&r!=='no') return;
-    if(filter==='pend'&&r!==null) return;
+    const ev=evals[p.id]||{};
+    const score=ev.score||null, visto=ev.visto||false;
+
+    if(filter==='vistas' && !visto) return;
+    if(filter==='novistas' && visto) return;
+    if(filter==='top' && (!score||score<4)) return;
     if(q&&!(p.dir||'').toLowerCase().includes(q)) return;
     v++;
-    const rc=r==='ok'?'rok':r==='no'?'rno':'';
+
+    const rc=rowClass(score);
     const tr=document.createElement('tr'); tr.className=rc;
     tr.innerHTML=`
-      <td><span class="rn">${i+1}</span><span class="pdir">${p.dir||'—'}</span></td>
-      <td>${dLbl(p.dorm)}</td><td>${p.m2c?p.m2c+' m²':'—'}</td><td>${p.m2t?p.m2t+' m²':'—'}</td>
-      <td>${p.patio||'—'}</td><td>${uBdg(p.ubic)}</td>
-      <td><span class="precio">${p.valor?'USD '+p.valor:'—'}</span></td>
-      <td>${p.url?`<a class="lbtn" href="${p.url}" target="_blank" rel="noopener">🔗 Ver</a>`:'<span style="color:var(--txt-l);font-size:11px">—</span>'}</td>
-      <td><textarea class="ni" rows="1" placeholder="Nota..." onchange="saveNote(${p.id},this.value)">${ev.nota||''}</textarea></td>
-      <td><div class="rc">
-        <button class="rb ok ${r==='ok'?'sel':''}" onclick="rate(${p.id},'ok')">👍</button>
-        <button class="rb no ${r==='no'?'sel':''}" onclick="rate(${p.id},'no')">👎</button>
-      </div></td>
-      ${isAdmin?`<td><div class="ab"><button class="eb" onclick="openEdit(${p.id})">✏️</button><button class="db" onclick="askDel(${p.id})">🗑️</button></div></td>`:''}
+      <td data-label="">
+        <span class="visto-dot ${visto?'visto-si':'visto-no'}" title="${visto?'Visto':'Sin ver'}"></span>
+        <span class="rn">${i+1}</span>
+        <span class="pdir">${p.dir||'—'}</span>
+      </td>
+      <td data-label="Dorm.">${dLbl(p.dorm)}</td>
+      <td data-label="M² Cub.">${p.m2c?p.m2c+' m²':'—'}</td>
+      <td data-label="M² Tot.">${p.m2t?p.m2t+' m²':'—'}</td>
+      <td data-label="Patio">${p.patio||'—'}</td>
+      <td data-label="Valor"><span class="precio">${p.valor?'USD '+p.valor:'—'}</span></td>
+      <td data-label="Link">${p.url?`<a class="lbtn" href="${p.url}" target="_blank" rel="noopener" onclick="markVisto(${p.id})">🔗 Ver</a>`:'—'}</td>
+      <td data-label="Puntuación">${starsHTML(p.id, score)}</td>
+      <td data-label="Notas"><textarea class="ni" rows="1" placeholder="Nota..." onchange="saveNote(${p.id},this.value)">${ev.nota||''}</textarea></td>
+      ${isAdmin?`<td data-label=""><div class="ab"><button class="eb" onclick="openEdit(${p.id})">✏️</button><button class="db" onclick="askDel(${p.id})">🗑️</button></div></td>`:''}
     `;
     tb.appendChild(tr);
   });
-  if(!v) tb.innerHTML='<tr class="erow"><td colspan="11">Sin propiedades con ese filtro.</td></tr>';
+
+  if(!v) tb.innerHTML=`<tr class="erow"><td colspan="10">Sin propiedades con ese filtro.</td></tr>`;
   updStats();
 }
 
 function updStats(){
-  const t=props.length, ok=props.filter(p=>(evals[p.id]||{}).rating==='ok').length,
-        no=props.filter(p=>(evals[p.id]||{}).rating==='no').length, pe=t-ok-no, pct=t?Math.round((ok+no)/t*100):0;
+  const t=props.length;
+  const scored=props.filter(p=>(evals[p.id]||{}).score).length;
+  const top=props.filter(p=>((evals[p.id]||{}).score||0)>=4).length;
+  const pend=t-scored;
+  const pct=t?Math.round(scored/t*100):0;
   document.getElementById('st-t').textContent=`${t} props`;
-  document.getElementById('st-ok').textContent=`${ok} 👍`;
-  document.getElementById('st-no').textContent=`${no} 👎`;
-  document.getElementById('st-p').textContent=`${pe} pend.`;
+  document.getElementById('st-ok').textContent=`${top} ⭐ top`;
+  document.getElementById('st-p').textContent=`${pend} pend.`;
   document.getElementById('prog').style.width=pct+'%';
   document.getElementById('prog-lbl').textContent=`${pct}% evaluado`;
 }
 
-// ── FILTER ──────────────────────────────────────────────────────
 function setF(f,btn){
   filter=f;
   document.querySelectorAll('.toolbar .tbtn:not(.yellow):not(.outline)').forEach(b=>b.className='tbtn');
-  btn.classList.add(f==='ok'?'aok':f==='no'?'ano':'active');
+  btn.classList.add(f==='top'?'aok':f==='novistas'?'ano':'active');
   renderT();
 }
 
-// ── RATE / NOTE ─────────────────────────────────────────────────
-async function rate(pid,val){
+// Marcar como visto al hacer click en el link
+async function markVisto(pid){
   if(!curPlan) return;
-  const prev=(evals[pid]||{}).rating, nr=prev===val?null:val, nota=(evals[pid]||{}).nota||'';
-  evals[pid]={rating:nr,nota}; renderT();
-  await db.from('evaluaciones').upsert({propiedad_id:pid,planilla_id:curPlan.id,rating:nr,nota,updated_at:new Date().toISOString()},{onConflict:'propiedad_id'});
-  toast(nr==='ok'?'👍 Interesante':nr==='no'?'👎 Descartada':'↩️ Calificación quitada');
+  const ev=evals[pid]||{};
+  if(ev.visto) return; // ya estaba visto
+  evals[pid]={...ev, visto:true};
+  renderT();
+  await db.from('evaluaciones').upsert(
+    {propiedad_id:pid,planilla_id:curPlan.id,rating:ev.rating||null,nota:ev.nota||'',score:ev.score||null,visto:true,updated_at:new Date().toISOString()},
+    {onConflict:'propiedad_id'}
+  );
 }
+
+// Calificación por estrellas
+async function setScore(pid, val){
+  if(!curPlan) return;
+  const ev=evals[pid]||{};
+  const newScore = ev.score===val ? null : val; // toggle
+  evals[pid]={...ev, score:newScore};
+  renderT();
+  await db.from('evaluaciones').upsert(
+    {propiedad_id:pid,planilla_id:curPlan.id,rating:ev.rating||null,nota:ev.nota||'',score:newScore,visto:ev.visto||false,updated_at:new Date().toISOString()},
+    {onConflict:'propiedad_id'}
+  );
+  const labels=['','😞 Muy malo','😐 Regular','😊 Neutro','👍 Bueno','🌟 Excelente'];
+  toast(newScore ? labels[newScore] : '↩️ Puntuación quitada');
+}
+
 const nt={};
 async function saveNote(pid,val){
   if(!curPlan) return;
-  const rating=(evals[pid]||{}).rating||null; evals[pid]={rating,nota:val};
+  const ev=evals[pid]||{}; evals[pid]={...ev,nota:val};
   clearTimeout(nt[pid]); nt[pid]=setTimeout(async()=>{
-    await db.from('evaluaciones').upsert({propiedad_id:pid,planilla_id:curPlan.id,rating,nota:val,updated_at:new Date().toISOString()},{onConflict:'propiedad_id'});
+    await db.from('evaluaciones').upsert(
+      {propiedad_id:pid,planilla_id:curPlan.id,rating:ev.rating||null,nota:val,score:ev.score||null,visto:ev.visto||false,updated_at:new Date().toISOString()},
+      {onConflict:'propiedad_id'}
+    );
   },700);
 }
 
-// ── ADD/EDIT ────────────────────────────────────────────────────
 function openAdd(){ editId=null; document.getElementById('m-ti').textContent='＋ Nueva propiedad'; clrF(); openOv('ov-p'); }
 function openEdit(id){
   const p=props.find(x=>x.id===id); if(!p) return; editId=id;
@@ -474,20 +560,26 @@ function openEdit(id){
   document.getElementById('f-patio').value=p.patio||'No';
   document.getElementById('f-m2c').value=p.m2c||'';
   document.getElementById('f-m2t').value=p.m2t||'';
-  document.getElementById('f-ubic').value=p.ubic||'Frente';
   document.getElementById('f-valor').value=p.valor||'';
   setAf('',''); openOv('ov-p');
 }
 function clrF(){
   ['f-url','f-dir','f-m2c','f-m2t','f-valor'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-dorm').value='0'; document.getElementById('f-patio').value='No'; document.getElementById('f-ubic').value='Frente'; setAf('','');
+  document.getElementById('f-dorm').value='0';
+  document.getElementById('f-patio').value='No';
+  setAf('','');
 }
 async function saveProp(){
   if(!curPlan){ toast('Seleccioná una planilla'); return; }
   const dir=document.getElementById('f-dir').value.trim(); if(!dir){ toast('⚠️ Ingresá dirección'); return; }
-  const obj={planilla_id:curPlan.id,dir,dorm:document.getElementById('f-dorm').value,patio:document.getElementById('f-patio').value,
-    m2c:parseInt(document.getElementById('f-m2c').value)||null,m2t:parseInt(document.getElementById('f-m2t').value)||null,
-    ubic:document.getElementById('f-ubic').value,valor:document.getElementById('f-valor').value.trim(),url:document.getElementById('f-url').value.trim()};
+  const obj={planilla_id:curPlan.id,dir,
+    dorm:document.getElementById('f-dorm').value,
+    patio:document.getElementById('f-patio').value,
+    m2c:parseInt(document.getElementById('f-m2c').value)||null,
+    m2t:parseInt(document.getElementById('f-m2t').value)||null,
+    ubic:'Frente',
+    valor:document.getElementById('f-valor').value.trim(),
+    url:document.getElementById('f-url').value.trim()};
   if(editId){
     const {error}=await db.from('propiedades').update(obj).eq('id',editId);
     if(error){ toast('❌ Error'); return; }
@@ -502,7 +594,6 @@ async function saveProp(){
   closeOv('ov-p'); renderT();
 }
 
-// ── DELETE ──────────────────────────────────────────────────────
 function askDel(id){ delId=id; const p=props.find(x=>x.id===id); document.getElementById('d-msg').textContent=`¿Eliminar "${p?p.dir:''}"?`; openOv('ov-d'); }
 async function confirmDel(){
   if(!delId) return;
@@ -512,19 +603,14 @@ async function confirmDel(){
   closeOv('ov-d'); renderT(); toast('🗑️ Eliminada'); delId=null;
 }
 
-// ── AUTOFILL ────────────────────────────────────────────────────
 async function autofill(){
   const url=document.getElementById('f-url').value.trim();
   if(!url||!url.includes('zonaprop')){ setAf('er','⚠️ Link de ZonaProp inválido'); return; }
   const btn=document.getElementById('afbtn'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Leyendo...';
-  setAf('ld','🔍 Consultando la publicación...');
+  setAf('ld','🔍 Consultando...');
   try{
-    const res=await fetch('/.netlify/functions/autofill',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({url})
-    });
-    if(!res.ok) throw new Error('Error del servidor');
+    const res=await fetch('/.netlify/functions/autofill',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+    if(!res.ok) throw new Error('Error');
     const o=await res.json();
     if(o.error) throw new Error(o.error);
     let n=0;
@@ -532,24 +618,22 @@ async function autofill(){
     Object.entries(map).forEach(([k,id])=>{ if(o[k]!=null){const el=document.getElementById(id);el.value=o[k];el.classList.add('filled');setTimeout(()=>el.classList.remove('filled'),2500);n++;} });
     if(o.dorm!=null) document.getElementById('f-dorm').value=o.dorm;
     if(o.patio) document.getElementById('f-patio').value=o.patio;
-    if(o.ubic)  document.getElementById('f-ubic').value=o.ubic;
     setAf('ok',`✅ ${n} campos completados`);
   } catch(e){ setAf('er','⚠️ No se pudo leer. Completá manualmente.'); }
   finally{ btn.disabled=false; btn.innerHTML='✨ Completar'; }
 }
 function setAf(t,m){ const el=document.getElementById('afst'); el.className='afst '+t; el.textContent=m; }
 
-// ── EXPORT ────────────────────────────────────────────────────── 
 function exportCSV(){
-  const rows=[['#','Dirección','Dorm.','M²Cub','M²Tot','Patio','Ubicación','Valor USD','Calificación','Notas','Link']];
-  props.forEach((p,i)=>{ const ev=evals[p.id]||{}; const r=ev.rating==='ok'?'👍':ev.rating==='no'?'👎':'—';
-    rows.push([i+1,p.dir,p.dorm,p.m2c||'',p.m2t||'',p.patio,p.ubic,p.valor,r,ev.nota||'',p.url||'']); });
+  const labels=['','Muy malo','Regular','Neutro','Bueno','Excelente'];
+  const rows=[['#','Dirección','Dorm.','M²Cub','M²Tot','Patio','Valor USD','Puntuación','Visto','Notas','Link']];
+  props.forEach((p,i)=>{ const ev=evals[p.id]||{};
+    rows.push([i+1,p.dir,p.dorm,p.m2c||'',p.m2t||'',p.patio,p.valor,ev.score?labels[ev.score]:'—',ev.visto?'Sí':'No',ev.nota||'',p.url||'']); });
   const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
   a.download=`${curPlan?curPlan.nombre:'props'}.csv`; a.click(); toast('📥 CSV exportado');
 }
 
-// ── UTILS ────────────────────────────────────────────────────────
 function openOv(id){ document.getElementById(id).classList.add('open'); }
 function closeOv(id){ document.getElementById(id).classList.remove('open'); }
 ['ov-p','ov-d','ov-np','ov-sh'].forEach(id=>{ document.getElementById(id).addEventListener('click',e=>{ if(e.target===e.currentTarget) closeOv(id); }); });
