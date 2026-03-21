@@ -202,11 +202,12 @@ function renderFicha(d) {
       </div>`
     ).join('');
     galeriaHTML = `
-      <div class="galeria">
-        <img id="fp" src="${_fotos[0]}" style="cursor:zoom-in;" onclick="lbAbrir(_fi)" />
-        <button class="btn-nav prev" onclick="cambiarFoto(_fi-1)">&#8249;</button>
-        <button class="btn-nav next" onclick="cambiarFoto(_fi+1)">&#8250;</button>
+      <div class="galeria" id="galeria-wrap">
+        <img id="fp" src="${_fotos[0]}" style="cursor:pointer;" />
+        <button class="btn-nav prev" onclick="event.stopPropagation();cambiarFoto(_fi-1)">&#8249;</button>
+        <button class="btn-nav next" onclick="event.stopPropagation();cambiarFoto(_fi+1)">&#8250;</button>
         <div id="ctr" class="counter">1 / ${_fotos.length}</div>
+        <div style="position:absolute;bottom:12px;left:12px;background:rgba(0,0,0,0.55);color:#fff;font-size:11px;padding:3px 8px;border-radius:10px;">🔍 Tocá para ampliar</div>
       </div>
       <div class="thumbs">${thumbsHTML}</div>`;
   } else {
@@ -223,6 +224,18 @@ function renderFicha(d) {
   const caractHTML = '';
 
   const app = document.getElementById('app');
+  // Setup lightbox after render
+  setTimeout(() => {
+    const galeriaWrap = document.getElementById('galeria-wrap');
+    if (galeriaWrap) {
+      galeriaWrap.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('btn-nav') && e.target.tagName !== 'BUTTON') {
+          lbAbrir(_fi);
+        }
+      });
+    }
+  }, 100);
+
   app.innerHTML = `
     <div class="header">
       <div style="display:flex;align-items:center;gap:12px;">
@@ -279,6 +292,13 @@ function renderFicha(d) {
       </div>
     </div>
   `;
+
+  // Event listener para lightbox - funciona en móvil y desktop
+  const fp = document.getElementById('fp');
+  if (fp) {
+    fp.addEventListener('click', function() { lbAbrir(_fi); });
+    fp.addEventListener('touchend', function(e) { e.preventDefault(); lbAbrir(_fi); });
+  }
 }
 </script>
 </body>
