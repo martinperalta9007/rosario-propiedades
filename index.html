@@ -640,7 +640,7 @@ async function confirmDel(){
 
 async function autofill(){
   const url=document.getElementById('f-url').value.trim();
-  if(!url||!url.includes('zonaprop')){ setAf('er','⚠️ Link de ZonaProp inválido'); return; }
+  if(!url||(!url.includes('zonaprop')&&!url.includes('rosario-fichas'))){ setAf('er','⚠️ Ingresá un link de tu ficha o de ZonaProp'); return; }
   const btn=document.getElementById('afbtn'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Leyendo...';
   setAf('ld','🔍 Consultando...');
   try{
