@@ -5,60 +5,69 @@ exports.handler = async (event) => {
 
   try {
     const { url } = JSON.parse(event.body);
-    if (!url || !url.includes('zonaprop')) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'URL inválida' }) };
-    }
+    if (!url) return { statusCode: 400, body: JSON.stringify({ error: 'URL inválida' }) };
 
-    // Leer la página de ZonaProp directamente
-    const pageRes = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept-Language': 'es-AR,es;q=0.9',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+    // ── MODO FICHA PROPIA (JSONBin) ──────────────────────────────
+    if (url.includes('rosario-fichas') || url.includes('jsonbin')) {
+      const params = new URL(url).searchParams;
+      const binId = params.get('id');
+      if (!binId) return { statusCode: 400, body: JSON.stringify({ error: 'ID de ficha no encontrado' }) };
+
+      const JSONBIN_KEY = '$2a$10$fkPEWzfTALriuCYyeBvuvO0go4Uc13O/HWwhVaOAIohPjwCov7LQ.';
+      const res = await fetch('https://api.jsonbin.io/v3/b/' + binId + '/latest', {
+        headers: { 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Meta': 'false' }
+      });
+
+      if (!res.ok) return { statusCode: 500, body: JSON.stringify({ error: 'No se pudo leer la ficha' }) };
+
+      const d = await res.json();
+      const f = d.features || {};
+
+      let dorm = 0;
+      if (f.dormitorios) dorm = parseInt(f.dormitorios) || 0;
+
+      let valor = null;
+      if (d.precio) {
+        const match = d.precio.replace(/\s/g, '').match(/[\d.]+/);
+        if (match) valor = match[0];
       }
-    });
 
-    const html = await pageRes.text();
-    // Extraer solo el texto relevante del HTML (primeros 8000 caracteres)
-    const clean = html.replace(/<script[\s\S]*?<\/script>/gi, '')
-                      .replace(/<style[\s\S]*?<\/style>/gi, '')
-                      .replace(/<[^>]+>/g, ' ')
-                      .replace(/\s+/g, ' ')
-                      .slice(0, 8000);
+      const desc = (d.descripcion || '').toLowerCase();
+      const caract = (d.caracteristicas || []).join(' ').toLowerCase();
+      const patio = (desc.includes('patio') || desc.includes('terraza') || desc.includes('jardin') ||
+                     caract.includes('patio') || caract.includes('terraza')) ? 'Si' : 'No';
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 800,
-        system: 'Extraés datos de propiedades inmobiliarias del texto de una página de ZonaProp Argentina. Respondé SOLO con JSON sin texto adicional: {"dir":"calle numero","dorm":0,"m2c":40,"m2t":45,"patio":"No","ubic":"Frente","valor":"55.000"}. dorm: 0=monoambiente,1-4=dormitorios,"Of."=oficina. patio: "Sí" si menciona patio/terraza/jardín, sino "No". ubic: Frente/Interno/Contrafrente/Dúplex/Casa/Reciclado. valor: solo número con punto como separador de miles. null si no encontrás el dato.',
-        messages: [{ role: 'user', content: 'Extraé los datos de esta propiedad:\n' + clean }]
-      })
-    });
+      const m2c = parseInt(f.supCubierta) || null;
+      const m2t = parseInt(f.supTotal) || m2c;
 
-    const data = await response.json();
-    const textBlock = data.content && data.content.find(b => b.type === 'text');
-    if (!textBlock) {
-      return { statusCode: 500, body: JSON.stringify({ error: 'Sin respuesta' }) };
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dir: d.direccion || d.titulo || null, dorm, m2c, m2t, patio, ubic: 'Frente', valor })
+      };
     }
 
-    const text = textBlock.text.trim();
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      return { statusCode: 500, body: JSON.stringify({ error: 'No se encontró JSON' }) };
+    // ── MODO ZONAPROP ────────────────────────────────────────────
+    if (url.includes('zonaprop')) {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514', max_tokens: 400,
+          system: 'Extraés datos de ZonaProp Argentina a partir de la URL. Respondé SOLO JSON: {"dir":"calle numero","dorm":0,"m2c":null,"m2t":null,"patio":"No","ubic":"Frente","valor":null}',
+          messages: [{ role: 'user', content: 'Extraé los datos de esta URL: ' + url }]
+        })
+      });
+      const data = await response.json();
+      const textBlock = data.content && data.content.find(b => b.type === 'text');
+      if (!textBlock) return { statusCode: 500, body: JSON.stringify({ error: 'Sin respuesta' }) };
+      const jsonMatch = textBlock.text.trim().match(/\{[\s\S]*\}/);
+      if (!jsonMatch) return { statusCode: 500, body: JSON.stringify({ error: 'No se encontró JSON' }) };
+      return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: jsonMatch[0] };
     }
 
-    const parsed = JSON.parse(jsonMatch[0]);
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(parsed)
-    };
+    return { statusCode: 400, body: JSON.stringify({ error: 'Usá un link de rosario-fichas.netlify.app o zonaprop.com.ar' }) };
+
   } catch (e) {
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
